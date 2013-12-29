@@ -23,7 +23,7 @@ db-admins, they're analysts who need to *query* data (not manage it). So instead
 we're going to focus on providing features for the 90-95% of users who need to 
 get data out of a database, not manage it.
 
-## How does it work?
+## Basic Components / Things it does
 We'll have a single page app that has a basic client/server configuration.
 
 ### `server`
@@ -84,7 +84,7 @@ it just do:
 
     var socket = io.connect();
 
-### Executing a Simple Query
+### Executing a Single Query
 Emit a message to the server with a key/value "query"
 
     socket.emit("type-ahead", { query: "select * from foo;" } );
@@ -127,13 +127,21 @@ You can open a saved file.
       console.log(data.filecontent);
     });
 
+### Bulk CURL
+Specify a query id and optionally pass in variables via the browser or a GET
+request and use the variables to execute the query and output it to either a
+.csv, JSON, or .xls.
+
 You can also access this via REST
 
     $ curl localhost:3000/file/myfile.sql
 
 ## TODO
 
+- client-side SQL templates
 - ability to kill a query
 - monitor long running queries
 - limit number of rows returned
+- history (?)
+- add sql parser
 - add a UI
