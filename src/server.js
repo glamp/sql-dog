@@ -1,17 +1,44 @@
 var express = require('express')
   , http = require('http')
   , path = require('path')
+  , fs = require('fs')
   , _ = require('underscore')
-  , gists = require('./gists')
-  , sql = require('./sql-client')(process.env["DB_CONN"] || "postgres://glamp@localhost/sandbox");
+  , gists = require('./gists');
 
+if (fs.existsSync(path.join(__dirname, "..", ".settings"))) {
+  var DB_CONN = fs.readFileSync(path.join(__dirname, "..", ".settings"));
+  DB_CONN = JSON.parse(DB_CONN);
+  var connstring = "";
+  connstring += DB_CONN.sqltype.toLowerCase() + "://";
+  connstring += DB_CONN.username + "@" + DB_CONN.password + "/";
+  connstring += DB_CONN.hostname + "/" + DB_CONN.dbname;
+  DB_CONN = connstring;
+}
+
+var sql = require('./sql-client')(process.env["DB_CONN"] || "postgres://glamp@localhost/sandbox");
+
+var schema = null;
+sql.loadMetadata(function(err, meta) {
+  if (err) {
+    console.log("could not load metadata: ", err);
+  }
+  schema = []
+  _.pairs(meta).forEach(function(pair) {
+    pair[1].forEach(function(row) {
+      row.table = pair[0];
+      schema.push(row);
+    });
+  });
+});
 
 var app = express();
 
 // all environments
 app.set('port', process.env.PORT || 3000);
 app.set('views', __dirname + '../../views');
-app.set('view engine', 'ejs');
+app.set("view engine", "html");
+app.engine("html", require('hogan-express'));
+
 app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.bodyParser());
@@ -33,7 +60,33 @@ server.listen(app.get('port'), function(){
 
 
 app.get("/", function(req, res) {
-  res.render("index", { title: "SQL" });
+  var userfiles = [];
+  gists.list(function(files) {
+    files.forEach(function(filename) {
+      gists.open(filename, function(filecontent) {
+        var f = { filename: filename, filecontent: filecontent };
+        f.escapedFilename = f.filename.replace(".", "-");
+        userfiles.push(f);
+      });
+    });
+    res.render("home", { title: "SQL Dog", schema: schema, files: userfiles });
+  });
+});
+
+app.get("/about", function(req, res) {
+  res.render("about", { title: "SQL Dog" });
+});
+
+app.post("/settings", function(req, res) {
+  var settingsfile = path.join(__dirname, "..", ".settings");
+  fs.writeFileSync(settingsfile, JSON.stringify(req.body, null, 2));
+  res.send({ status: "done" });
+});
+
+app.post("/query", function(req, res) {
+  sql.execute(req.body.query, function(err, results) {
+    res.send({ results: results });
+  });
 });
 
 app.get("/file/:name", function(req, res) {
@@ -72,7 +125,7 @@ io.sockets.on("connection", function(socket) {
    * { table: "" } || { table: "fo"} || { table: "foo", text: "col" }
    */
   socket.on("type-ahead", function(data) {
-    sql.typeAhead(data.table, data.text, function(err, results) {
+    sql.typeAhead(data.table, data.text, data.tokens, function(err, results) {
       if (err) {
         socket.emit("type-ahead", []);
         return;
@@ -93,6 +146,7 @@ io.sockets.on("connection", function(socket) {
         // TODO: we're going to need a way to kill queries...
         sql.execute(data.query, function(err, result) {
           if (err) {
+            console.log("error executing query: ", err);
             socket.emit("query-error", err);
             return;
           }
@@ -122,7 +176,7 @@ io.sockets.on("connection", function(socket) {
       socket.emit("open-file", { filecontent: filecontent } );
     });
   });
-
+  
   socket.on("save", function(data) {
    // handle saving a query or query results
    if (data.type=="query") {
@@ -136,6 +190,12 @@ io.sockets.on("connection", function(socket) {
      // stuff into key/value store (could move this to SQLite)
      socket.cache.results[data.query] = data.results;
    }
+  });
+
+  socket.on("remove", function(data) {
+    gists.remove(data.filename, function() {
+      console.log(data.filename + " was removed.");
+    });
 
   });
 

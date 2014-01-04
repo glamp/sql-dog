@@ -1,12 +1,12 @@
 {
-  "name": "application-name",
+  "name": "sqldog",
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node app.js"
+    "start": "./bin/sqldog"
   },
   "bin": {
-    "sqlize": "./bin/sqlize"
+    "sqldog": "./bin/sqldog"
   },
   "dependencies": {
     "express": "3.4.0",

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ title }}</title>
+    <link rel="stylesheet" media="all" href="/dynatable/jquery.dynatable.css" />
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/javascripts/jquery-1.8.0.min.js"></script>
+    <script src="/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/dynatable/jquery.dynatable.js" type="text/javascript"></script>
+    <link rel='stylesheet' href='/themes/flatly.bootstrap.min.css' />
+    <script src="/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/javascripts/underscore.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/javascripts/mustache.js" type="text/javascript" charset="utf-8"></script>
+    <link rel='stylesheet' href='/stylesheets/results.css' />
+    <script src="/javascripts/tables.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/javascripts/config-editor.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <!-- nav bar -->
+    <div class="navbar navbar-default">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/"></span>SQL Dog</a>
+      </div>
+      <div class="navbar-collapse collapse navbar-responsive-collapse">
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="/">IDE</a></li>
+          <li><a href="/about">About</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li style="padding-right: 10px;"><button id="btn-run" type="button" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-play"></span> Run</button></li>
+          <li style="padding-right: 10px;"><button type="button" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-stop"></span> Stop</button></li>
+          <li style="padding-right: 10px;"><button id="btn-save" type="button" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-floppy-disk"></span> Save</button></li>
+        </ul>
+      </div><!-- /.nav-collapse -->
+    </div>
+    <!-- end navbar -->
+
+    <div class="row">
+    <!-- top left panel -->
+        <!-- top left tabs (?) -->
+      <div class="col-lg-8">
+        <div class="bs-example">
+          <ul id="editors" class="nav nav-tabs" style="margin-bottom: 15px;">
+            {{#files}}
+                <li>
+                  <a href="#editor-{{ escapedFilename }}" data-toggle="tab">
+                    <button class="close" type="button">×</button> {{ filename }} 
+                  </a>
+                </li>
+            {{/files}}
+             <li class=""><a id="editor-newfile" data-toggle="tab"><span class="glyphicon glyphicon-plus"></span></a></li>
+          </ul>
+          <div id="editor-tabs" class="tab-content">
+            {{#files}}
+              <div class="tab-pane" id="editor-{{ escapedFilename }}">
+                <pre id="ace-editor-{{ escapedFilename }}">{{ filecontent }}</pre>
+              </div>
+            {{/files}}
+          </div>
+        </div>
+      </div>
+    <!-- top right panel -->
+        <!-- top right tabs (?) -->
+        <div class="col-lg-4">
+          <div class="bs-example">
+            <ul class="nav nav-tabs" style="margin-bottom: 15px;">
+              <li class="active"><a href="#files" data-toggle="tab">Files</a></li>
+              <li class=""><a href="#predtype" data-toggle="tab">Pred Type</a></li>
+              <li class=""><a href="#schema" data-toggle="tab">Schema</a></li>
+              <li class=""><a href="#settings" data-toggle="tab">DB Setup</a></li>
+              <li class=""><a href="#history" data-toggle="tab">History</a></li>
+              <li class=""><a href="#preferences" data-toggle="tab">Preferences</a></li>
+              <li class=""><a href="#help" data-toggle="tab">Help</a></li>
+            </ul>
+            <div id="help-tabs" class="tab-content">
+              <div class="tab-pane fade active in" id="files">
+                <div class="col-lg-12">
+                  <div class="bs-example">
+                    <!-- files tab -->
+                    <div id="files-list" class="list-group" style="list-style-type: none;">
+                      {{#files}}
+                      <li>
+                        <a href="#editor-{{ escapedFilename }}" class="list-group-item file" data-toggle="tab">
+                          <button class="close delete" type="button">×</button>{{ filename }}</a>
+                      </li>
+                      {{/files}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- pred type tab -->
+              <div class="tab-pane fade" id="predtype">
+                <ul id="guesses">
+                </ul>
+              </div>
+              <!-- schema tab -->
+              <div class="tab-pane fade" id="schema">
+                <table id="schema-table"> 
+                  <thead>
+                    <tr>
+                      <th>Table</th>
+                      <th>Column</th>
+                      <th>Datatype</th>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+              <!-- settings tab -->
+              <div class="tab-pane fade" id="settings">
+                <form role="form" id="settings-form">
+                  <fieldset>
+                    <div class="form-group">
+                      <label for="sqltype">SQL Type</label>
+                      <select id="sqltype" class="form-control">
+                        <option>Postgres</option>
+                        <option>MySQL</option>
+                        <option>MariaDB</option>
+                        <option>MS SQL</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label for="username">Username</label>
+                      <input type="text" id="username" class="form-control" placeholder="Hank Mardukas">
+                    </div>
+                    <div class="form-group">
+                      <label for="password">Password</label>
+                      <input type="password" id="password" class="form-control" placeholder="abcd1234">
+                    </div>
+                    <div class="form-group">
+                      <label for="hostname">Hostname</label>
+                      <input type="text" id="hostname" class="form-control" placeholder="localhost, datawarehouse.com, 10.20.1.248">
+                    </div>
+                    <div class="form-group">
+                      <label for="dbname">Database Name</label>
+                      <input type="text" id="dbname" class="form-control" placeholder="db-prod, sandbox, mydb">
+                    </div>
+                    <div class="form-group">
+                      <label for="port">Port</label>
+                      <input type="text" id="port" class="form-control" placeholder="5432, 8080, 80">
+                    </div>
+                    <div class="checkbox">
+                      <label>
+                        <input type="checkbox"> Save Password
+                      </label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                  </fieldset>
+                </form>
+              </div>
+              <!-- history tab -->
+              <div class="tab-pane fade" id="history" style="overflow: scroll;">
+                <ul id="recent-queries">
+                </ul>
+              </div>
+              <!-- preferences tab -->
+              <div class="tab-pane fade" id="preferences">
+                <form role="form" id="settings-form">
+                  <fieldset>
+                    <div class="form-group">
+                      <label for="giturl">GIT Repo for Gists (Defaults to local)</label>
+                      <input type="text" id="giturl" class="form-control" placeholder="git@github.com:glamp/SQL-Gists.git">
+                    </div>
+                    <div class="checkbox">
+                      <label>
+                        <input type="checkbox"> Display results as modal?
+                      </label>
+                    </div>
+                  </fieldset>
+                </form>
+              </div>
+              <!-- help tab -->
+              <div class="tab-pane fade" id="help">
+                <form id="help-form">
+                <input type="text" class="form-control col-lg-12" placeholder="Search Documentation">
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- top right tabs end -->
+      </div>
+    </div>
+
+    <div class="row">
+    <!-- bottom left panel -->
+    <div class="col-lg-12">
+      <div class="bs-example">
+        <ul id="results-list" class="nav nav-tabs" style="margin-bottom: 15px;">
+        </ul>
+
+        <div id="results-tabs" class="tab-content">
+      </div>
+    </div>
+    <!-- bottom right panel -->
+    </div>
+  </div>
+    <div id="pred-modal" class="modal hide">
+      <h2>HELLO</h2>
+<!--       <ul id="guesses">
+      </ul>
+ -->    </div>
+
+  </body>
+    <script type="text/javascript">
+
+      $("#settings-form").submit(function(e) {
+          e.preventDefault();
+          var data = {};
+          $("#settings-form .form-control").each(function(a, d) {
+            data[$(d).attr("id")] = $(d).val();
+          });
+          $.post("/settings", data);
+      });
+
+      var socket = io.connect();
+
+      // this isn't working :(
+      // $("#schema-table").dynatable({
+      //   dataset: {
+      //     records: schema
+      //   }
+      // });
+
+      //this doens't work
+      $("#editors").children().first().attr("class", "active");
+
+      socket.on("query-result", function(data) {
+        var table_id = 'results-' + ($("#results-tabs").children().length+1);
+        addTable(table_id, data);
+      });
+
+      $("#btn-run").click(function(e) {
+        $("#recent-queries").append("<li><pre>" + editors["ace-editor-untitled-sql"].getSelectedText() + "</pre></li>");
+        socket.emit("query", { 
+          query:  editors["ace-editor-untitled-sql"].getSelectedText()
+        });
+        e.preventDefault();
+      });
+
+      $("#btn-save").click(function(e) {
+        var editor = editors["ace-" + $($("#editors .active a").attr("href")).attr("id")];
+        var filename = $("#editors .active").text();
+        if (filename.indexOf("untitled") > 0) {
+          var filename = prompt("Enter a new filename:");
+          socket.emit("save", { type: "query", filename: filename, query: editor.getValue() });
+          location.reload();
+        } else {
+          socket.emit("save", { type: "query", filename: filename, query: editor.getValue() });
+        }
+        e.preventDefault();
+      });
+
+      $("#help").submit(function(e) { 
+          // open a new window w/ the search results corresponding w/ the db 
+          // they're using
+      });
+      
+      socket.on("type-ahead", function(data) {
+          guess_lis = data.map(function(guess) {
+            if (guess==undefined) {
+              return "";
+            }
+            return "<li class='guess-" + guess.type + "'>" + guess.name + "</li>";
+          });
+          $("#guesses").children().remove();
+          $("#guesses").append(guess_lis);
+      });
+
+      var editors = {};
+      $("pre").each(function(i, pre) {
+        var id = $(pre).attr("id");
+        editors[id] = setupEditor(id, socket);
+      });
+
+      $("#history").height($(window).height() - 300);
+
+      $("#help").submit(function(e) {
+          var url = "http://www.postgresql.org/search/?q={query}&a=1&submit=Search"
+          var searchURL = url.replace("{query}", $("#help input").val());
+          window.open(searchURL);
+      });
+
+      $("#editor-newfile").click(function(e) {
+        var n = $(".newsqlfile").length + 1;
+        var _id = "untitled-" + n + "-sql";
+        var newtab = '<li class="newsqlfile"><a id="tab-' + _id + '" href="#editor-' + _id + '" data-toggle="tab"><button class="close" type="button">×</button> {{ filename }} untitled' + n + '.sql</a></li>';
+        var editortab = '<div class="tab-pane" id="editor-' + _id + '"><pre id="ace-editor-' + _id + '"></pre></div>';
+        var fileli = '<a href="#editor-' + _id + '" class="list-group-item file" data-toggle="tab">untitled' + n + '.sql</a>';
+        $("#editors").children().last().before(newtab);
+        $("#editor-tabs").append(editortab);
+        $("#files-list").append(fileli);
+        editors["ace-editor-" + _id] = setupEditor("ace-editor-" + _id, socket);
+        //$('a[href="#editor-' + _id + '"]').tab('show');
+        $("#tab-" + _id).click();
+        bindClose();
+      });
+
+      bindClose = function() {
+        $(".close").click(function(e) {
+          var _id = $(this).parent().attr("href");
+          $(_id).remove();
+          $(this).parent().parent().remove();
+          
+          var filename = $(this).parent().text().trim().replace("×", "");
+          if (confirm('Are you sure you want to delete "' + filename + '" ?')) {
+            if ($(this).hasClass("delete")) {
+              socket.emit("remove", { filename: filename })
+              $("a[href='" + _id + "'").remove();
+            }
+          }
+        });
+      }
+
+
+      $(".file").click(function(e) {
+        var filename = $(this).text();
+
+        if ($($(this).attr("href")).length==0) {
+          $.get("/file/" + filename, function(d) {
+            var _id = filename.replace(".", "-");
+            var newtab = '<li class="newsqlfile"><a id="tab-' + _id + '" href="#editor-' + _id + '" data-toggle="tab"><button class="close" type="button">×</button> {{ filename }} ' + filename + '</a></li>';
+            var editortab = '<div class="tab-pane" id="editor-' + _id + '"><pre id="ace-editor-' + _id + '">' + d.filecontent + '</pre></div>';
+            var fileli = '<a href="#editor-' + _id + '" class="list-group-item file" data-toggle="tab">' + filename + '</a>';
+            $("#editors").children().last().before(newtab);
+            $("#editor-tabs").append(editortab);
+            $("#files-list").append(fileli);
+            editors["ace-editor-" + _id] = setupEditor("ace-editor-" + _id, socket);
+            //$('a[href="#editor-' + _id + '"]').tab('show');
+            $("#tab-" + _id).click();
+            bindClose();
+          })
+        }
+      });
+
+      bindClose();
+
+    </script>
+
+</html>

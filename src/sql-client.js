@@ -48,19 +48,25 @@ module.exports = function(constring) {
         fn(null, meta);
       });
     },
-    typeAhead : function(table, text, fn) {
+    typeAhead : function(table, text, tokens, fn) {
       //TODO: one of these isn't going to work
       var rgx_search = new RegExp(".*" + text + ".*", 'g');
+      var matched_tokens = _.filter(tokens || [], function(t) {
+        return rgx_search.exec(t.name);
+      })
       if (table==null) {
         var results = _.filter(_.keys(metadata), function(i) {
           return rgx_search.exec(i);
         });
-        fn(null, results);
+        results = results.map(function(name) {
+          return { name: name, type: "table" };
+        });
+        fn(null, results.concat(matched_tokens));
       } else if (_.has(metadata, table)) {
         var results = _.filter(metadata[table], function(i) {
           return rgx_search.exec(i.name);
         });
-        fn(null, results);
+        fn(null, results.concat(matched_tokens));
       } else {
         fn("Did not work", null);
       }
@@ -68,14 +74,18 @@ module.exports = function(constring) {
     execute : function(querystring, fn) {
       _id = querystring;
       if (_.has(queries, _id)) {
-        return fn("duplicate query currently executing", null);
+        console.error("duplicate query executing!");
+        console.error(_id);
+        // return fn("duplicate query currently executing", null);
       }
 
       queries[_id] = "go";
       var rows = [];
       pg.connect(constring, function(err, db, done) {
+        delete queries[_id];
+        console.error("executing -->");
+        console.error(querystring);
         db.query(querystring, function(err, result) {
-          delete queries[_id];
           done();
           if (err) {
             fn(err, null);
@@ -95,7 +105,7 @@ module.exports = function(constring) {
         query.on("end", function(result) {
           delete queries[_id];
           fn(null, rows);
-          console.log(rows.length + ' rows were received');
+          console.error(rows.length + ' rows were received');
           done();
         });
         */

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ title }}</title>
+    <script src="/javascripts/jquery-1.8.0.min.js"></script>
+    <script src="/bootstrap/js/bootstrap.min.js"></script>
+    <link rel='stylesheet' href='/themes/flatly.bootstrap.min.css' />
+    <script src="/javascripts/underscore.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <!-- nav bar -->
+    <div class="navbar navbar-default">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">SQL Dog</a>
+      </div>
+      <div class="navbar-collapse collapse navbar-responsive-collapse">
+        <ul class="nav navbar-nav">
+          <li ><a href="/">IDE</a></li>
+          <li class="active"><a href="/about">About</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li style="padding-right: 10px;"><button id="btn-run" type="button" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-play"></span> Run</button></li>
+          <li style="padding-right: 10px;"><button type="button" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-stop"></span> Stop</button></li>
+          <li style="padding-right: 10px;"><button id="btn-save" type="button" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-floppy-disk"></span> Save</button></li>
+        </ul>
+      </div><!-- /.nav-collapse -->
+    </div>
+    <!-- end navbar -->
+
+    <div class="row">
+      <div class="col-lg-1"></div>
+      <div class="col-lg-8">
+        <h1>What is this?</h1> 
+        <p>This is a SQL client that runs entirely in the browser! I built it 
+        out of frustration with existing SQL IDEs for OSX. My biggest issue is 
+        that most SQL clients are built for database administrators, <i>NOT</i>
+        database <i>USERS</i>. Think about it...who writes the most queries? Not
+        developers but analysts!
+        </p>
+
+        <h1>What does it do?</h1>
+        <ul>
+          <li>Run queries in the broswer</li>
+          <li>Predictive type <b>everywhere</b></li>
+          <li>Saves your queries using <code>git</code></li>
+          <li>Save results in the browser, or export to Excel/CSV</li>
+          <li>Help with executing long running queries</li>
+          <li>Customizeable macros / snippets</li>
+          <li>Customizeable keyboard shortcuts</li>
+          <li>Query templating</li>
+        </ul>
+
+        <h1>How do I use it?</h1>
+        <p>This is how you use it...</p>
+
+      </div>
+    </div>
+
+
+</html>

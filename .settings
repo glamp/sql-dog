@@ -1,0 +1,9 @@
+{
+  "sqltype": "Postgres",
+  "username": "austin",
+  "password": "ycowboyhat",
+  "hostname": "dw.yhathq.com",
+  "dbname": "yhat",
+  "port": "5432",
+  "giturl": ""
+}

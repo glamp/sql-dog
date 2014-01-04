@@ -5,6 +5,12 @@ var fs = require('fs')
 
 require("shellshim").globalize();
 
+config = function(giturl, done) {
+  $("git", "--git-dir", path.join(__dirname, "gists", ".git"),
+      "--work-tree", path.join(__dirname, "gists"),
+      "add", "remote", "origin", giturl);
+  done();
+}
 
 add = function(filecontents, filename, username, done) {
   /*
@@ -19,8 +25,8 @@ add = function(filecontents, filename, username, done) {
         "init");
   }
   // we'll default filenames to uuids
-  filename = filename || uuid.v1(); 
-  filename = path.join(__dirname, "gists", filename + ".sql");
+  filename = filename || uuid.v1() + ".sql";
+  filename = path.join(__dirname, "gists", filename);
   fs.writeFileSync(filename, filecontents);
   /*
    * Add the new file to the git repo and commit it.
@@ -58,7 +64,7 @@ remove = function(filename, done) {
 list = function(done) {
   var files = fs.readdirSync(path.join(__dirname, "gists"));
   files = _.filter(files, function(f) {
-    return f.slice(0, 1)!=".";
+    return f.slice(-4)==".sql";
   });
   done(files);
 }
@@ -74,6 +80,7 @@ open = function(filename, done) {
 }
 
 
+exports.config = config;
 exports.add = add;
 exports.remove = remove;
 exports.list = list;

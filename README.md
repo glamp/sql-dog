@@ -136,12 +136,3 @@ You can also access this via REST
 
     $ curl localhost:3000/file/myfile.sql
 
-## TODO
-
-- client-side SQL templates
-- ability to kill a query
-- monitor long running queries
-- limit number of rows returned
-- history (?)
-- add sql parser
-- add a UI
