@@ -49,7 +49,7 @@
             {{#files}}
                 <li>
                   <a href="#editor-{{ escapedFilename }}" data-toggle="tab">
-                    <button class="close" type="button">×</button> {{ filename }} 
+                    <button class="close" type="button"><span class="glyphicon glyphicon-remove"></span></button> {{ filename }} 
                   </a>
                 </li>
             {{/files}}
@@ -70,7 +70,6 @@
           <div class="bs-example">
             <ul class="nav nav-tabs" style="margin-bottom: 15px;">
               <li class="active"><a href="#files" data-toggle="tab">Files</a></li>
-              <li class=""><a href="#predtype" data-toggle="tab">Pred Type</a></li>
               <li class=""><a href="#schema" data-toggle="tab">Schema</a></li>
               <li class=""><a href="#settings" data-toggle="tab">DB Setup</a></li>
               <li class=""><a href="#history" data-toggle="tab">History</a></li>
@@ -86,17 +85,12 @@
                       {{#files}}
                       <li>
                         <a href="#editor-{{ escapedFilename }}" class="list-group-item file" data-toggle="tab">
-                          <button class="close delete" type="button">×</button>{{ filename }}</a>
+                          <button class="close delete" type="button"><span class="glyphicon glyphicon-minus"></span></button>{{ filename }}</a>
                       </li>
                       {{/files}}
                     </div>
                   </div>
                 </div>
-              </div>
-              <!-- pred type tab -->
-              <div class="tab-pane fade" id="predtype">
-                <ul id="guesses">
-                </ul>
               </div>
               <!-- schema tab -->
               <div class="tab-pane fade" id="schema">
@@ -199,11 +193,27 @@
     <!-- bottom right panel -->
     </div>
   </div>
-    <div id="pred-modal" class="modal hide">
-      <h2>HELLO</h2>
-<!--       <ul id="guesses">
-      </ul>
- -->    </div>
+
+  <div id="pred-modal" class="modal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+          <ul id="guesses">
+          </ul>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+
+  <div id="result-modal" class="modal result-modal">
+    <div class="modal-dialog result-modal">
+      <div class="modal-content result-modal">
+        <div class="modal-body result-modal">
+          <table id="result-table"></table>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
 
   </body>
     <script type="text/javascript">
@@ -230,14 +240,16 @@
       $("#editors").children().first().attr("class", "active");
 
       socket.on("query-result", function(data) {
+        createModalTable(data);
         var table_id = 'results-' + ($("#results-tabs").children().length+1);
         addTable(table_id, data);
       });
 
       $("#btn-run").click(function(e) {
-        $("#recent-queries").append("<li><pre>" + editors["ace-editor-untitled-sql"].getSelectedText() + "</pre></li>");
+        var _id = "ace-" + $("#editor-tabs .active").attr("id");
+        $("#recent-queries").append("<li><pre>" + editors[_id].getSelectedText() + "</pre></li>");
         socket.emit("query", { 
-          query:  editors["ace-editor-untitled-sql"].getSelectedText()
+          query:  editors[_id].getSelectedText()
         });
         e.preventDefault();
       });
@@ -265,10 +277,12 @@
             if (guess==undefined) {
               return "";
             }
-            return "<li class='guess-" + guess.type + "'>" + guess.name + "</li>";
+            return "<li style='opacity: " + (1 - guess.dist/100) + "' class='guess-" + guess.type + " confidence-" + guess.dist + "'>" + guess.name + "</li>";
           });
           $("#guesses").children().remove();
           $("#guesses").append(guess_lis);
+          $("#guesses").children().first().addClass("best");
+          $("#pred-modal").modal({ keyboard: true});
       });
 
       var editors = {};
@@ -288,9 +302,10 @@
       $("#editor-newfile").click(function(e) {
         var n = $(".newsqlfile").length + 1;
         var _id = "untitled-" + n + "-sql";
-        var newtab = '<li class="newsqlfile"><a id="tab-' + _id + '" href="#editor-' + _id + '" data-toggle="tab"><button class="close" type="button">×</button> {{ filename }} untitled' + n + '.sql</a></li>';
+        var newtab = '<li class="newsqlfile"><a id="tab-' + _id + '" href="#editor-' + _id + '" data-toggle="tab"><button class="close" type="button"><span class="glyphicon glyphicon-remove"></span></button> {{ filename }} untitled' + n + '.sql</a></li>';
         var editortab = '<div class="tab-pane" id="editor-' + _id + '"><pre id="ace-editor-' + _id + '"></pre></div>';
-        var fileli = '<a href="#editor-' + _id + '" class="list-group-item file" data-toggle="tab">untitled' + n + '.sql</a>';
+        var fileli = '<li><a href="#editor-' + _id + '" class="list-group-item file" data-toggle="tab"><button class="close delete" type="button"><span class="glyphicon glyphicon-minus"></span></button>untitled' + n + '.sql</a></li>';
+
         $("#editors").children().last().before(newtab);
         $("#editor-tabs").append(editortab);
         $("#files-list").append(fileli);
@@ -306,9 +321,9 @@
           $(_id).remove();
           $(this).parent().parent().remove();
           
-          var filename = $(this).parent().text().trim().replace("×", "");
-          if (confirm('Are you sure you want to delete "' + filename + '" ?')) {
-            if ($(this).hasClass("delete")) {
+          var filename = $(this).parent().text().trim();
+          if ($(this).hasClass("delete")) {
+            if (confirm('Are you sure you want to delete "' + filename + '" ?')) {
               socket.emit("remove", { filename: filename })
               $("a[href='" + _id + "'").remove();
             }
@@ -323,9 +338,9 @@
         if ($($(this).attr("href")).length==0) {
           $.get("/file/" + filename, function(d) {
             var _id = filename.replace(".", "-");
-            var newtab = '<li class="newsqlfile"><a id="tab-' + _id + '" href="#editor-' + _id + '" data-toggle="tab"><button class="close" type="button">×</button> {{ filename }} ' + filename + '</a></li>';
+            var newtab = '<li class="newsqlfile"><a id="tab-' + _id + '" href="#editor-' + _id + '" data-toggle="tab"><button class="close" type="button"><span class="glyphicon glyphicon-remove"></span></button> {{ filename }} ' + filename + '</a></li>';
             var editortab = '<div class="tab-pane" id="editor-' + _id + '"><pre id="ace-editor-' + _id + '">' + d.filecontent + '</pre></div>';
-            var fileli = '<a href="#editor-' + _id + '" class="list-group-item file" data-toggle="tab">' + filename + '</a>';
+            var fileli = '<li><a href="#editor-' + _id + '" class="list-group-item file" data-toggle="tab"><button class="close delete" type="button"><span class="glyphicon glyphicon-minus"></span></button>{{ filename }}</a>' + filename + '</a></li>';
             $("#editors").children().last().before(newtab);
             $("#editor-tabs").append(editortab);
             $("#files-list").append(fileli);
@@ -338,6 +353,7 @@
       });
 
       bindClose();
+      // $("#editor-newfile").click();
 
     </script>
 

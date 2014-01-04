@@ -37,3 +37,57 @@ button.delete {
 	opacity: .2;
 	filter: alpha(opacity=20);
 }
+
+.modal-backdrop {
+	background: none;
+}
+
+.result-modal {
+	max-height: 800px;
+	max-width: 1500px;
+}
+
+.best {
+	background-color: coral;
+}
+
+/* I think I want less here :(*/
+/*.confidence-0 { opacity: 0.0; }
+.confidence-1 { opacity: 0.5; }
+.confidence-2 { opacity: 0.10; }
+.confidence-3 { opacity: 0.15; }
+.confidence-4 { opacity: 0.20; }
+.confidence-5 { opacity: 0.25; }
+.confidence-6 { opacity: 0.30; }
+.confidence-7 { opacity: 0.35; }
+.confidence-8 { opacity: 0.40; }
+.confidence-9 { opacity: 0.45; }
+.confidence-10 { opacity: 0.50; }
+.confidence-11 { opacity: 0.55; }
+.confidence-12 { opacity: 0.60; }
+.confidence-13 { opacity: 0.65; }
+.confidence-14 { opacity: 0.70; }
+.confidence-15 { opacity: 0.75; }
+.confidence-16 { opacity: 0.80; }
+.confidence-17 { opacity: 0.85; }
+.confidence-18 { opacity: 0.90; }
+.confidence-19 { opacity: 0.95; }
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

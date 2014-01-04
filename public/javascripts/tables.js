@@ -24,3 +24,27 @@ addTable = function(table_id, records) {
 	// $("#results-list").children().attr("class", "");
 	// $("#results-list").children().last().attr("class", "active");
 }
+
+createModalTable = function(records) {
+	var _id = 'result-table'
+    if (_.isEmpty(records)) {
+      console.log("no data returned!");
+      return;
+    }
+	var cols = _.keys(_.first(records));
+	cols = _.map(cols, function(c) {
+		return "<th>" + c + "</th>";
+	});
+	cols = "<thead>" + cols + "</thead>";
+	$('#result-table').attr("class", "table table-striped table-bordered table-hover");
+	$('#result-table').append(cols);
+	$('#result-table').dynatable({
+		dataset: {
+			records: records,
+			features: {
+				search: false
+			}
+		}
+	});
+	$("#result-modal").modal({keyboard: true});
+}

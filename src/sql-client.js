@@ -1,6 +1,12 @@
 var pg = require('pg')
   , sqlqueries = require('./queries')('postgres')
-  , _ = require('underscore');
+  , _ = require('underscore')
+  , lev = require('levenshtein')
+  , fuzzy = require('fuzzy-filter');
+
+escapeRegExp = function(str) {
+  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+}
 
 
 module.exports = function(constring) {
@@ -49,27 +55,66 @@ module.exports = function(constring) {
       });
     },
     typeAhead : function(table, text, tokens, fn) {
-      //TODO: one of these isn't going to work
-      var rgx_search = new RegExp(".*" + text + ".*", 'g');
-      var matched_tokens = _.filter(tokens || [], function(t) {
-        return rgx_search.exec(t.name);
-      })
+
       if (table==null) {
-        var results = _.filter(_.keys(metadata), function(i) {
-          return rgx_search.exec(i);
-        });
-        results = results.map(function(name) {
+        var possibles = _.keys(metadata).map(function(name) {
           return { name: name, type: "table" };
         });
-        fn(null, results.concat(matched_tokens));
-      } else if (_.has(metadata, table)) {
-        var results = _.filter(metadata[table], function(i) {
-          return rgx_search.exec(i.name);
-        });
-        fn(null, results.concat(matched_tokens));
+        possibles = possibles.concat(tokens);
+        console.log(0);
       } else {
-        fn("Did not work", null);
+        if (_.has(metadata, table)) {
+          var possibles = metadata[table]
+        } else {
+          var possibles = [];
+          console.log("table not found!: " + table);
+        }
       }
+      console.log(possibles);
+      possibles = possibles.map(function(item) {
+        item.dist = lev(item.name, text);
+        return item;
+      });
+      possibles = _.sortBy(possibles, function(item) {
+        return -(text.length / item.dist.toFixed(2));
+      });
+
+      var results = fuzzy(text, _.pluck(possibles, 'name'));
+      var results = results.map(function(result) {
+        var item = _.findWhere(possibles, { name: result });
+        item.dist = lev(text, item.name) / text.length.toFixed(2);
+        return item;
+      });
+      results = _.sortBy(results, function(item) {
+        return item.dist;
+      })
+
+      // //TODO: one of these isn't going to work
+      // var rgx_search = new RegExp(".*" + escapeRegExp(text) + ".*", 'g');
+      // var matched_tokens = _.filter(tokens || [], function(t) {
+      //   return rgx_search.exec(t.name);
+      // })
+      // if (table==null) {
+      //   var results = _.filter(_.keys(metadata), function(i) {
+      //     return rgx_search.exec(i);
+      //   });
+      //   results = results.map(function(name) {
+      //     return { name: name, type: "table" };
+      //   });
+      //   results = results.concat(matched_tokens);
+      // } else if (_.has(metadata, table)) {
+      //   var results = _.filter(metadata[table], function(i) {
+      //     return rgx_search.exec(i.name);
+      //   });
+      //   results = results.concat(matched_tokens);
+      // } else {
+      //   return fn("Did not work", null);
+      // }
+      // results = results.map(function(result) {
+      //   result.dist = lev(text, result.name);
+      //   return result;
+      // })
+      fn(null, results);
     },
     execute : function(querystring, fn) {
       _id = querystring;

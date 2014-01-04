@@ -1,3 +1,7 @@
+escapeRegExp = function(str) {
+  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+}
+
 getAllTokens = function(editor) {
   var lines = editor.session.getLines(0, editor.session.getLength());
   var tokens = {};
@@ -32,18 +36,37 @@ findPredText = function(editor) {
   return text.slice(1);
 }
 
-findTableName = function(editor, alias) {
+findTableName = function(editor, query, alias) {
 
-  var rgx = new RegExp('([A-Za-z_0-9]+) ' + alias, 'g');
-  var i = editor.getCursorPosition().row
-  var line = editor.session.getLine(i);
-  while (rgx.test(line)!=true) {
-    i += 1;
-    line = editor.session.getLine(i);
+  var rgx = new RegExp("(FROM|JOIN|from|join)[ \t\r\n]+([A-Za-z0-9_]+) ([A-Za-z0-9_]+)", 'g');
+
+  var match = rgx.exec(query)
+  var all_alias = {}
+  while (match) {
+    all_alias[match[3]] = match[2];
+    query = query.slice(match.index);
+    match = rgx.exec(query) 
   }
-  // console.log(line);
-  rgx.exec(line);
-  return rgx.exec(line)[1];
+
+  return (all_alias[alias] || null);
+
+  // var rgx = new RegExp('([A-Za-z_0-9]+) ' + escapeRegExp(alias), 'g');
+  // var i = editor.getCursorPosition().row
+  // var line = editor.session.getLine(i);
+  // while (rgx.test(line)!=true && i < 1000) {
+  //   i += 1;
+  //   line = editor.session.getLine(i);
+  // }
+  // if (rgx.test(line)==false) {
+  //   var i = editor.getCursorPosition().row
+  //   while (rgx.test(line)!=true && i > 0) {
+  //     i -= 1;
+  //     line = editor.session.getLine(i);
+  //   }
+  // }
+  // // console.log(line);
+  // rgx.exec(line);
+  // return rgx.exec(line)[1];
 }
 
 insertCharacter = function(editor, ch) {
@@ -137,7 +160,7 @@ setupEditor = function(id, socket) {
   editor.commands.addCommand({
     name: 'predType',
     // maybe change this to tab?
-    bindKey: {win: 'Shift-Space',  mac: 'Shift-Space'},
+    bindKey: {win: 'Ctrl-Space',  mac: 'Ctrl-Space'},
     exec: function(editor) {
       editor.predMode = true
       editor.predChars = "";
@@ -156,6 +179,8 @@ setupEditor = function(id, socket) {
       }
       editor.predChars = "";
       editor.selection.clearSelection();
+      $("#pred-modal").modal('hide');
+      $("#result-modal").modal('hide');
     }
   });
 
@@ -169,9 +194,88 @@ setupEditor = function(id, socket) {
       // should find the last token (newline, space, SQL operator (SELECT/WHERE/FROM))
       insertCharacter(editor, ".")
       var alias = findPrevToken(editor)
-          , table = findTableName(editor, alias);
+          , table = findTableName(editor, extractQuery(editor), alias);
       editor.table = table;
       socket.emit("type-ahead", { table: table, text: editor.predChars, tokens: getAllTokens(editor) });
+    }
+  });
+
+  editor.commands.addCommand({
+    name: 'tabComplete',
+    bindKey: {win: 'tab', mac: 'tab'},
+    exec: function(editor) {
+      if (editor.predMode==true) {
+        editor.selection.selectLeft()
+        if (editor.session.getTextRange(editor.getSelectionRange())==".") {
+          editor.selection.selectRight()
+        } else {                  
+          editor.selection.selectRight()
+          editor.removeWordLeft()                    
+        }
+        insertCharacter(editor, $("#guesses .best").first().text());
+        editor.predMode = false;
+        $("#pred-modal").modal('hide')
+      } else {
+        insertCharacter(editor, "\t")
+      }
+    }
+  });
+
+
+  editor.commands.addCommand({
+    name: 'enterComplete',
+    bindKey: {win: 'enter', mac: 'enter'},
+    exec: function(editor) {
+      if (editor.predMode==true) {
+        editor.selection.selectLeft()
+        if (editor.session.getTextRange(editor.getSelectionRange())==".") {
+          editor.selection.selectRight()
+        } else {                  
+          editor.selection.selectRight()
+          editor.removeWordLeft()                    
+        }
+        insertCharacter(editor, $("#guesses .best").first().text());
+        editor.predMode = false;
+        $("#pred-modal").modal('hide')
+      } else {
+        insertCharacter(editor, "\n")
+      }
+    }
+  });
+
+  editor.commands.addCommand({
+    name: 'up-arrow',
+    bindKey: {win: 'Up', mac: 'Up'},
+    exec: function(editor) {
+      if (editor.predMode==true) {
+        if ($("#guesses .best").prev().length==0) {
+          $("#guesses li").last().addClass("best");
+          $("#guesses .best").first().removeClass("best");
+        } else {
+          $("#guesses .best").prev().addClass("best");
+          $("#guesses .best").last().removeClass("best");
+        }
+      } else {
+        editor.navigateUp();
+      }
+    }
+  });
+
+  editor.commands.addCommand({
+    name: 'down-arrow',
+    bindKey: {win: 'Down', mac: 'Down'},
+    exec: function(editor) {
+      if (editor.predMode==true) {
+        if ($("#guesses .best").next().length==0) {
+          $("#guesses li").first().addClass("best");
+          $("#guesses .best").last().removeClass("best");
+        } else {
+          $("#guesses .best").next().addClass("best");
+          $("#guesses .best").first().removeClass("best"); 
+        }
+      } else {
+        editor.navigateDown();
+      }
     }
   });
 
