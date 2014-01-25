@@ -26,6 +26,30 @@ addTable = function(table_id, records) {
 	// $("#results-list").children().last().attr("class", "active");
 }
 
+addTable = function(table_id, records) {
+	'<table class="table table-striped table-bordered table-hover">
+	    <thead>
+	      <tr>
+	        <th>#</th>
+	        {{#cols}}
+	        	<th>{{ . }}</th>
+	        {{/cols}}
+	      </tr>
+	    </thead>
+	    <tbody>
+	      {{#rows}}
+	      <tr>
+	        <td>{{ N }}</td>
+	      	{{#values}}
+	        <td>{{ . }}</td>
+	        {{/values}}
+	      </tr>
+	      {{/rows}}
+	    </tbody>
+	</table>
+	'
+}
+
 createModalTable = function(records) {
 	var _id = 'result-table'
     if (_.isEmpty(records)) {
