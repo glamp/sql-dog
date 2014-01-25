@@ -84,7 +84,7 @@ app.post("/settings", function(req, res) {
 });
 
 app.post("/query", function(req, res) {
-  sql.execute(req.body.query, function(err, results) {
+  sql.execute(req.body.query, 10000, function(err, results) {
     res.send({ results: results });
   });
 });
@@ -100,7 +100,7 @@ app.post("/bulk", function(req, res) {
     , filename = sha(query)
     , path_to_file = path.join(__dirname, "bulk", filename);
 
-  sql.execute(query, function(err, result) {
+  sql.execute(query, -1, function(err, result) {
     res.send({ result: result});
     //res.download(path_to_file);
   });
@@ -135,6 +135,7 @@ io.sockets.on("connection", function(socket) {
   });
 
   socket.on("query", function(data) {
+    socket.emit("query-status", { status: "running" });
     // re-route bulk query to somewhere else?
     if (data.type=="bulk") {
     } else {
@@ -144,14 +145,17 @@ io.sockets.on("connection", function(socket) {
       } else {
         // we're going to execute the query and send it back over the wire
         // TODO: we're going to need a way to kill queries...
-        sql.execute(data.query, function(err, result) {
+        sql.execute(data.query, 10000, function(err, result) {
           if (err) {
             console.log("error executing query: ", err);
             socket.emit("query-error", err);
+            socket.emit("query-status", { status: "stopped" });
             return;
           }
           // TODO: we should stream this...
           socket.emit("query-result", result);
+          socket.emit("query-status", { status: "stopped" });
+          console.log(queries);
         });
       }
     }

@@ -12,7 +12,7 @@ escapeRegExp = function(str) {
 module.exports = function(constring) {
 
   metadata = {}
-  queries = {}
+  GLOBAL.queries = {}
 
   return { 
     loadMetadata: function(fn) {
@@ -28,7 +28,7 @@ module.exports = function(constring) {
        *    ]
        * }
        */ 
-      this.execute(sqlqueries.metadata, function(err, result) {
+      this.execute(sqlqueries.metadata, -1, function(err, result) {
         /*
          * expecting something like this:
          * [
@@ -116,8 +116,9 @@ module.exports = function(constring) {
       // })
       fn(null, results);
     },
-    execute : function(querystring, fn) {
+    execute : function(querystring, limit, fn) {
       _id = querystring;
+      limit = limit || 10000;
       if (_.has(queries, _id)) {
         console.error("duplicate query executing!");
         console.error(_id);
@@ -127,10 +128,14 @@ module.exports = function(constring) {
       queries[_id] = "go";
       var rows = [];
       pg.connect(constring, function(err, db, done) {
-        delete queries[_id];
         console.error("executing -->");
         console.error(querystring);
+        if (limit > 0) {
+          query = querystring.replace(/;$/, "");
+          querystring = "select * from (" + query + ") as t limit " + limit;
+        }
         db.query(querystring, function(err, result) {
+          delete queries[_id];
           done();
           if (err) {
             fn(err, null);

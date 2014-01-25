@@ -96,6 +96,47 @@ extractQuery = function(editor) {
     return editor.session.getLines(first_query_row, last_query_row).join("\n").trim();
 }
 
+sendQuery = function(editor) {
+    var query = editor.session.getTextRange(editor.getSelectionRange()).trim();
+    if (query.indexOf("{{#") > 0) {
+      var userdata = query.split('\n')[0];
+      query = query.split('\n').slice(1).join('\n');
+
+      if (userdata.indexOf(" (") > -1) {
+        var userdata_query = userdata.split(' = ').slice(1).join("");
+        var results = null;
+        $.post("/query", { query: userdata_query }, function(data) {
+          results = data.results;
+          var varname = userdata.split(' = ')[0];
+          userdata = {};
+          userdata[varname] = results;
+          var queries = Mustache.render(query, userdata);
+          queries.split(';').forEach(function(query) {
+            if (query!="") {
+              $("#recent-queries").append("<li><pre>" + query + "</pre></li>");
+              socket.emit("query", { query: query });
+            }
+          });
+        });
+      } else {
+        userdata = eval(userdata);
+        var queries = Mustache.render(query, userdata);
+        queries.trim().split(';').forEach(function(query) {
+          if (query!="") {
+            $("#recent-queries").append("<li><pre>" + query + "</pre></li>");
+            socket.emit("query", { query: query });
+          }
+        });
+      }
+    } else {
+      if (query.length==0) {
+        query = extractQuery(editor);
+      }
+      $("#recent-queries").append("<li><pre>" + query + "</pre></li>");
+      socket.emit("query", { query:  query });
+    }
+}
+
 
 setupEditor = function(id, socket) {
   var editor = ace.edit(id);
@@ -107,12 +148,7 @@ setupEditor = function(id, socket) {
     name: 'sendCommand',
     bindKey: {win: 'Ctrl-Enter',  mac: 'Command-Enter'},
     exec: function(editor) {
-      var query = editor.session.getTextRange(editor.getSelectionRange()).trim();
-      if (query.length==0) {
-        query = extractQuery(editor);
-      }
-      $("#recent-queries").append("<li><pre>" + query + "</pre></li>");
-      socket.emit("query", { query:  query });
+      sendQuery(editor);
     }
   });
 
@@ -151,8 +187,6 @@ setupEditor = function(id, socket) {
           }
         });
       }
-      
-
     }
   });
 

@@ -8,7 +8,7 @@
 - ability to kill a query
 - monitor long running queries
 - ~~limit number of rows returned~~
-- add sql parser
+- add sql parser (why again?)
 - warn if a template will execute a shitload of queries (i sort of hate this)
 
 ### UI
@@ -21,23 +21,24 @@
 - grabbing the "right" item
 - utilizing `tab` to complete
 - fix issue w/ it being 1 character behind
-- colorize based on what type of thing it is
+- colorize based on what type of thing it is (?)
 - create a modal overlay
 
 ### Results
 
 - display results on full screen as modal, then give option to delete or pin
 - make this configurable in Preferences
-- add "X" to close certain results
+- ~~add "X" to close certain results~~
 - add download icon to export results
 - add a "execute to file" feature
-- hook up help to the actual help
+- ~~hook up help to the actual help~~
 - ability to open results in new window
 - ability to auto-open results in new window
 
 
 ### Files
 
+- live-grep on gists
 - ~~add in ability to create a new file~~
 - ability to rename files
 - ~~ability to close files~~
