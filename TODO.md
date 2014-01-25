@@ -2,12 +2,12 @@
 
 ### Querying
 
-- add something to indicate a query is running
+- ~~add something to indicate a query is running~~
 - ~~client-side SQL templates~~
 - add a button for executing a template
 - ability to kill a query
 - monitor long running queries
-- limit number of rows returned
+- ~~limit number of rows returned~~
 - add sql parser
 - warn if a template will execute a shitload of queries (i sort of hate this)
 
@@ -38,15 +38,15 @@
 
 ### Files
 
-- add in ability to create a new file
+- ~~add in ability to create a new file~~
 - ability to rename files
-- ability to close files
-- ability to open files
+- ~~ability to close files~~
+- ~~ability to open files~~
 - add keyboard shortcuts to help
 
 ### General
 
-- SQL prettifier
+- ~~SQL prettifier~~
 - add an animal logo
 - add in a searchable schema
 - add "application mode"; something that you can double click to run/open
