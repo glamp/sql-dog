@@ -26,28 +26,38 @@ addTable = function(table_id, records) {
 	// $("#results-list").children().last().attr("class", "active");
 }
 
-addTable = function(table_id, records) {
-	'<table class="table table-striped table-bordered table-hover">
-	    <thead>
-	      <tr>
-	        <th>#</th>
-	        {{#cols}}
-	        	<th>{{ . }}</th>
-	        {{/cols}}
-	      </tr>
-	    </thead>
-	    <tbody>
-	      {{#rows}}
-	      <tr>
-	        <td>{{ N }}</td>
-	      	{{#values}}
-	        <td>{{ . }}</td>
-	        {{/values}}
-	      </tr>
-	      {{/rows}}
-	    </tbody>
-	</table>
-	'
+addTable2 = function(table_id, records) {
+	$("#results-list").append('<li class=""><a href="#' + table_id + '" data-toggle="tab"><button class="close" type="button"><span class="glyphicon glyphicon-remove"></span></button>' + table_id + '</a></li>');
+	$("#results-tabs").append('<div id="' + table_id + '" class="tab-pane"><table id="table-' + table_id+ '"></table></div>');
+	var cols = _.keys(_.first(records));
+	table_template = ''
+	table_template += '<table class="table table-striped table-bordered table-hover">\n'
+	table_template += '	    <thead>\n'
+	table_template += '	      <tr>\n'
+	table_template += '	        <th>#</th>\n'
+	table_template += '	        {{#cols}}\n'
+	table_template += '	        <th>{{ . }}</th>\n'
+	table_template += '	        {{/cols}}\n'
+	table_template += '	      </tr>\n'
+	table_template += '	    </thead>\n'
+	table_template += '	    <tbody>\n'
+	table_template += '	      {{#rows}}\n'
+	table_template += '	      <tr>\n'
+	table_template += '	        <td>{{ idx }}</td>\n'
+	cols.forEach(function(col) {
+		table_template += '	    	<td>{{ ' + col + '}}</td>\n'
+	});
+	table_template += '	      </tr>\n'
+	table_template += '	      {{/rows}}\n'
+	table_template += '	    </tbody>\n'
+	table_template += '	</table>'
+	idx = 1;
+	records.forEach(function(record) {
+		record.idx = idx;
+		idx++;
+	});
+	$('#table-' + table_id).append(Mustache.render(table_template, { cols: cols, rows: records }));
+	bindClose();
 }
 
 createModalTable = function(records) {
