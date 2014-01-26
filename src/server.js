@@ -180,6 +180,16 @@ io.sockets.on("connection", function(socket) {
       socket.emit("open-file", { filecontent: filecontent } );
     });
   });
+
+  socket.on("search-files", function(data) {
+    gists.search(data.query, function(err, results) {
+      if (err) {
+        console.log(error);
+        return;
+      }
+      socket.emit("search-results", results);
+    });
+  });
   
   socket.on("save", function(data) {
    // handle saving a query or query results
