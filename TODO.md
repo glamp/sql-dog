@@ -50,6 +50,12 @@
 
 ### General
 
+- native app launcher for OSX
+    - ~~basic app that will open your browser to SQL Dog~~
+    - safety component so you don't run 1000 SQL Dogs
+    - app icon
+    - bundle node and SQL Dog w/ app
+    - UI for configuration (?)
 - ~~SQL prettifier~~
 - add an animal logo
 - add in a searchable schema
