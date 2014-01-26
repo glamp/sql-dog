@@ -240,7 +240,8 @@
       socket.on("query-result", function(data) {
         // createModalTable(data);
         var table_id = 'results-' + ($("#results-tabs").children().length+1);
-        addTable(table_id, data);
+        // addTable(table_id, data);
+        addTable2(table_id, data);
         openInNewWindow("SQL Dog | Results", $("#table-" + table_id).parent().html())
       });
 
