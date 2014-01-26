@@ -1,10 +1,13 @@
 # TODO
 
+**~: server done**
+**~~: server and UI done**
+
 ### Querying
 
 - ~~add something to indicate a query is running~~
 - ~~client-side SQL templates~~
-- add a button for executing a template
+- ~~add a button for executing a template~~
 - ability to kill a query
 - monitor long running queries
 - ~~limit number of rows returned~~
@@ -32,18 +35,18 @@
 - add download icon to export results
 - add a "execute to file" feature
 - ~~hook up help to the actual help~~
-- ability to open results in new window
-- ability to auto-open results in new window
+- ~~ability to open results in new window~~
+- ~~ability to auto-open results in new window~~
 
 
 ### Files
 
-- live-grep on gists
+- ~live-grep on gists~
 - ~~add in ability to create a new file~~
-- ability to rename files
+- ~ability to rename files~
 - ~~ability to close files~~
 - ~~ability to open files~~
-- add keyboard shortcuts to help
+- add keyboard shortcuts to help (?)
 
 ### General
 
