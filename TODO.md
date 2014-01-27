@@ -37,7 +37,7 @@
 - ~~hook up help to the actual help~~
 - ~~ability to open results in new window~~
 - ~~ability to auto-open results in new window~~
-
+- turn auto-open on/off
 
 ### Files
 
@@ -51,6 +51,7 @@
 ### General
 
 - native app launcher for OSX
+    - maybe [this](http://blog.coolaj86.com/articles/how-to-create-an-osx-pkg-installer.html)
     - ~~basic app that will open your browser to SQL Dog~~
     - safety component so you don't run 1000 SQL Dogs
     - app icon
