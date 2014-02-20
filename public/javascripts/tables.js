@@ -27,7 +27,11 @@ addTable = function(table_id, records) {
 }
 
 addTable2 = function(table_id, records) {
-	$("#results-list").append('<li class=""><a href="#' + table_id + '" data-toggle="tab"><button class="close" type="button"><span class="glyphicon glyphicon-remove"></span></button>' + table_id + '</a></li>');
+	var li = '<li class=""><a href="#' + table_id + '" data-toggle="tab">';
+	li += '<button class="close" type="button"><span class="glyphicon glyphicon-remove">'
+	li += '<button class="download" type="button"><span class="glyphicon glyphicon-download-alt">'
+	li += '</span></button>' + table_id + '</a></li>';
+	$("#results-list").append(li);
 	$("#results-tabs").append('<div id="' + table_id + '" class="tab-pane"><table id="table-' + table_id+ '"></table></div>');
 	var cols = _.keys(_.first(records));
 	table_template = ''
@@ -53,11 +57,15 @@ addTable2 = function(table_id, records) {
 	table_template += '	</table>'
 	idx = 1;
 	records.forEach(function(record) {
+    if (idx > parseInt($("#rows-returned").val())) {
+      return;
+    }
 		record.idx = idx;
 		idx++;
 	});
 	$('#table-' + table_id).append(Mustache.render(table_template, { cols: cols, rows: records }));
 	bindClose();
+	bindDownload();
 }
 
 createModalTable = function(records) {

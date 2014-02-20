@@ -70,7 +70,6 @@ module.exports = function(constring) {
           console.log("table not found!: " + table);
         }
       }
-      console.log(possibles);
       possibles = possibles.map(function(item) {
         item.dist = lev(item.name, text);
         return item;
@@ -128,8 +127,6 @@ module.exports = function(constring) {
       queries[_id] = "go";
       var rows = [];
       pg.connect(constring, function(err, db, done) {
-        console.error("executing -->");
-        console.error(querystring);
         if (limit > 0) {
           query = querystring.replace(/;$/, "");
           querystring = "select * from (" + query + ") as t limit " + limit;

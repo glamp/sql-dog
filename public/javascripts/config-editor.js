@@ -114,7 +114,10 @@ sendQuery = function(editor) {
           queries.split(';').forEach(function(query) {
             if (query!="") {
               $("#recent-queries").append("<li><pre>" + query + "</pre></li>");
-              socket.emit("query", { query: query });
+              socket.emit("query", {
+                query: query,
+                n: parseInt($("#rows-returned").val())
+              });
             }
           });
         });
@@ -124,7 +127,10 @@ sendQuery = function(editor) {
         queries.trim().split(';').forEach(function(query) {
           if (query!="") {
             $("#recent-queries").append("<li><pre>" + query + "</pre></li>");
-            socket.emit("query", { query: query });
+            socket.emit("query", {
+              query: query,
+              n: parseInt($("#rows-returned").val())
+            });
           }
         });
       }
@@ -133,7 +139,10 @@ sendQuery = function(editor) {
         query = extractQuery(editor);
       }
       $("#recent-queries").append("<li><pre>" + query + "</pre></li>");
-      socket.emit("query", { query:  query });
+      socket.emit("query", {
+        query:  query,
+        n: parseInt($("#rows-returned").val())
+      });
     }
 }
 
@@ -217,6 +226,17 @@ setupEditor = function(id, socket) {
       $("#result-modal").modal('hide');
     }
   });
+
+  editor.commands.addCommand({
+    name: 'showStarCols',
+    bindKey: {win: 'Ctrl-j', mac: 'Ctrl-j'},
+    exec: function(editor) {
+      var alias = findPrevToken(editor)
+        , table = findTableName(editor, extractQuery(editor), alias);
+      //TODO: insert cols into editor...
+      console.log("show columns for: " + table);
+    }
+  })
 
   editor.commands.addCommand({
     name: 'dotPred',

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+for ID in `forever list | grep sqldog | awk '{ print $2 }' | tr -d '[]'`
+do
+  forever stop "${ID}"
+done

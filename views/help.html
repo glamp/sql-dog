@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ title }}</title>
+    <script src="/javascripts/jquery-1.8.0.min.js"></script>
+    <script src="/bootstrap/js/bootstrap.min.js"></script>
+    <link rel='stylesheet' href='/themes/flatly.bootstrap.min.css' />
+    <script src="/javascripts/underscore.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <!-- nav bar -->
+    <div class="navbar navbar-default">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">SQL Dog</a>
+      </div>
+      <div class="navbar-collapse collapse navbar-responsive-collapse">
+        <ul class="nav navbar-nav">
+          <li ><a href="/">IDE</a></li>
+          <li class="active"><a href="/help">Help</a></li>
+          <li><a href="/about">About</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li style="padding-right: 10px;"><button id="btn-run" type="button" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-play"></span> Run</button></li>
+          <li style="padding-right: 10px;"><button type="button" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-stop"></span> Stop</button></li>
+          <li style="padding-right: 10px;"><button id="btn-save" type="button" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-floppy-disk"></span> Save</button></li>
+        </ul>
+      </div><!-- /.nav-collapse -->
+    </div>
+    <!-- end navbar -->
+
+    <div class="row">
+      <div class="col-lg-1"></div>
+      <div class="col-lg-8">
+        <h1>Help</h1> 
+        <div>
+          <h3>Shortcuts</h3>
+          <table class="table table-striped table-bordered table-hover"
+            <thead>
+              <th>Description</th>
+              <th>Windows</th>
+              <th>Mac</th>
+            </thead>
+            <tr>
+              <td>Run Query</td><td>Ctrl-Enter</td><td>Command-Enter</td>
+            </tr>
+            <tr>
+              <td>Display Objects</td><td>Ctrl-Space</td><td>Ctrl-Space</td>
+            </tr>
+            <tr>
+              <td>Activate Type Head</td><td>.</td><td>.</td>
+            </tr>
+            <tr>
+              <td>Deactivate Type Head</td><td>ESC</td><td>ESC</td>
+            </tr>
+            <tr>
+              <td>showSettingsMenu</td><td>Ctrl-,</td><td>Command-,</td>
+            </tr>
+            <tr>
+              <td>selectall</td><td>Ctrl-A</td><td>Command-A</td>
+            </tr>
+            <tr>
+              <td>centerselection</td><td>null</td><td>Ctrl-L</td>
+            </tr>
+            <tr>
+              <td>gotoline</td><td>Ctrl-L</td><td>Command-L</td>
+            </tr>
+            <tr>
+              <td>fold</td><td>Alt-L or Ctrl-F1</td><td>Command-Alt-L or Command-F1</td>
+            </tr>
+            <tr>
+              <td>unfold</td><td>Alt-Shift-L or Ctrl-Shift-F1</td><td>Command-Alt-Shift-L or Command-Shift-F1</td>
+            </tr>
+            <tr>
+              <td>toggleFoldWidget</td><td>F2</td><td>F2</td>
+            </tr>
+            <tr>
+              <td>toggleParentFoldWidget</td><td>Alt-F2</td><td>Alt-F2</td>
+            </tr>
+            <tr>
+              <td>foldall</td><td>Ctrl-Alt-0</td><td>Ctrl-Command-Option-0</td>
+            </tr>
+            <tr>
+              <td>foldOther</td><td>Alt-0</td><td>Command-Option-0</td>
+            </tr>
+            <tr>
+              <td>unfoldall</td><td>Alt-Shift-0</td><td>Command-Option-Shift-0</td>
+            </tr>
+            <tr>
+              <td>findnext</td><td>Ctrl-K</td><td>Command-G</td>
+            </tr>
+            <tr>
+              <td>findprevious</td><td>Ctrl-Shift-K</td><td>Command-Shift-G</td>
+            </tr>
+            <tr>
+              <td>find</td><td>Ctrl-F</td><td>Command-F</td>
+            </tr>
+            <tr>
+              <td>overwrite</td><td>undefined</td><td>undefined</td>
+            </tr>
+            <tr>
+              <td>selecttostart</td><td>Ctrl-Shift-Home</td><td>Command-Shift-Up</td>
+            </tr>
+            <tr>
+              <td>gotostart</td><td>Ctrl-Home</td><td>Command-Home or Command-Up</td>
+            </tr>
+            <tr>
+              <td>selectup</td><td>Shift-Up</td><td>Shift-Up</td>
+            </tr>
+            <tr>
+              <td>golineup</td><td>Up</td><td>Up or Ctrl-P</td>
+            </tr>
+            <tr>
+              <td>selecttoend</td><td>Ctrl-Shift-End</td><td>Command-Shift-Down</td>
+            </tr>
+            <tr>
+              <td>gotoend</td><td>Ctrl-End</td><td>Command-End or Command-Down</td>
+            </tr>
+            <tr>
+              <td>selectdown</td><td>Shift-Down</td><td>Shift-Down</td>
+            </tr>
+            <tr>
+              <td>golinedown</td><td>Down</td><td>Down or Ctrl-N</td>
+            </tr>
+            <tr>
+              <td>selectwordleft</td><td>Ctrl-Shift-Left</td><td>Option-Shift-Left</td>
+            </tr>
+            <tr>
+              <td>gotowordleft</td><td>Ctrl-Left</td><td>Option-Left</td>
+            </tr>
+            <tr>
+              <td>selecttolinestart</td><td>Alt-Shift-Left</td><td>Command-Shift-Left</td>
+            </tr>
+            <tr>
+              <td>gotolinestart</td><td>Alt-Left or Home</td><td>Command-Left or Home or Ctrl-A</td>
+            </tr>
+            <tr>
+              <td>selectleft</td><td>Shift-Left</td><td>Shift-Left</td>
+            </tr>
+            <tr>
+              <td>gotoleft</td><td>Left</td><td>Left or Ctrl-B</td>
+            </tr>
+            <tr>
+              <td>selectwordright</td><td>Ctrl-Shift-Right</td><td>Option-Shift-Right</td>
+            </tr>
+            <tr>
+              <td>gotowordright</td><td>Ctrl-Right</td><td>Option-Right</td>
+            </tr>
+            <tr>
+              <td>selecttolineend</td><td>Alt-Shift-Right</td><td>Command-Shift-Right</td>
+            </tr>
+            <tr>
+              <td>gotolineend</td><td>Alt-Right or End</td><td>Command-Right or End or Ctrl-E</td>
+            </tr>
+            <tr>
+              <td>selectright</td><td>Shift-Right</td><td>Shift-Right</td>
+            </tr>
+            <tr>
+              <td>gotoright</td><td>Right</td><td>Right or Ctrl-F</td>
+            </tr>
+            <tr>
+              <td>selectpagedown</td><td>undefined</td><td>undefined</td>
+            </tr>
+            <tr>
+              <td>pagedown</td><td>null</td><td>Option-PageDown</td>
+            </tr>
+            <tr>
+              <td>gotopagedown</td><td>PageDown</td><td>PageDown or Ctrl-V</td>
+            </tr>
+            <tr>
+              <td>selectpageup</td><td>undefined</td><td>undefined</td>
+            </tr>
+            <tr>
+              <td>pageup</td><td>null</td><td>Option-PageUp</td>
+            </tr>
+            <tr>
+              <td>gotopageup</td><td>undefined</td><td>undefined</td>
+            </tr>
+            <tr>
+              <td>scrollup</td><td>Ctrl-Up</td><td>null</td>
+            </tr>
+            <tr>
+              <td>scrolldown</td><td>Ctrl-Down</td><td>null</td>
+            </tr>
+            <tr>
+              <td>selectlinestart</td><td>undefined</td><td>undefined</td>
+            </tr>
+            <tr>
+              <td>selectlineend</td><td>undefined</td><td>undefined</td>
+            </tr>
+            <tr>
+              <td>togglerecording</td><td>Ctrl-Alt-E</td><td>Command-Option-E</td>
+            </tr>
+            <tr>
+              <td>replaymacro</td><td>Ctrl-Shift-E</td><td>Command-Shift-E</td>
+            </tr>
+            <tr>
+              <td>jumptomatching</td><td>Ctrl-P</td><td>Ctrl-Shift-P</td>
+            </tr>
+            <tr>
+              <td>selecttomatching</td><td>Ctrl-Shift-P</td><td>null</td>
+            </tr>
+            <tr>
+              <td>removeline</td><td>Ctrl-D</td><td>Command-D</td>
+            </tr>
+            <tr>
+              <td>duplicateSelection</td><td>Ctrl-Shift-D</td><td>Command-Shift-D</td>
+            </tr>
+            <tr>
+              <td>sortlines</td><td>Ctrl-Alt-S</td><td>Command-Alt-S</td>
+            </tr>
+            <tr>
+              <td>togglecomment</td><td>Ctrl-/</td><td>Command-/</td>
+            </tr>
+            <tr>
+              <td>toggleBlockComment</td><td>Ctrl-Shift-/</td><td>Command-Shift-/</td>
+            </tr>
+            <tr>
+              <td>modifyNumberUp</td><td>Ctrl-Shift-Up</td><td>Alt-Shift-Up</td>
+            </tr>
+            <tr>
+              <td>modifyNumberDown</td><td>Ctrl-Shift-Down</td><td>Alt-Shift-Down</td>
+            </tr>
+            <tr>
+              <td>replace</td><td>Ctrl-H</td><td>Command-Option-F</td>
+            </tr>
+            <tr>
+              <td>undo</td><td>Ctrl-Z</td><td>Command-Z</td>
+            </tr>
+            <tr>
+              <td>redo</td><td>Ctrl-Shift-Z or Ctrl-Y</td><td>Command-Shift-Z or Command-Y</td>
+            </tr>
+            <tr>
+              <td>copylinesup</td><td>Alt-Shift-Up</td><td>Command-Option-Up</td>
+            </tr>
+            <tr>
+              <td>movelinesup</td><td>Alt-Up</td><td>Option-Up</td>
+            </tr>
+            <tr>
+              <td>copylinesdown</td><td>Alt-Shift-Down</td><td>Command-Option-Down</td>
+            </tr>
+            <tr>
+              <td>movelinesdown</td><td>Alt-Down</td><td>Option-Down</td>
+            </tr>
+            <tr>
+              <td>del</td><td>Delete</td><td>Delete or Ctrl-D or Shift-Delete</td>
+            </tr>
+            <tr>
+              <td>backspace</td><td>Shift-Backspace or Backspace</td><td>Ctrl-Backspace or Shift-Backspace or Backspace or Ctrl-H</td>
+            </tr>
+            <tr>
+              <td>cut_or_delete</td><td>Shift-Delete</td><td>null</td>
+            </tr>
+            <tr>
+              <td>removetolinestart</td><td>Alt-Backspace</td><td>Command-Backspace</td>
+            </tr>
+            <tr>
+              <td>removetolineend</td><td>Alt-Delete</td><td>Ctrl-K</td>
+            </tr>
+            <tr>
+              <td>removewordleft</td><td>Ctrl-Backspace</td><td>Alt-Backspace or Ctrl-Alt-Backspace</td>
+            </tr>
+            <tr>
+              <td>removewordright</td><td>Ctrl-Delete</td><td>Alt-Delete</td>
+            </tr>
+            <tr>
+              <td>outdent</td><td>Shift-Tab</td><td>Shift-Tab</td>
+            </tr>
+            <tr>
+              <td>indent</td><td>Tab</td><td>Tab</td>
+            </tr>
+            <tr>
+              <td>blockoutdent</td><td>Ctrl-[</td><td>Ctrl-[</td>
+            </tr>
+            <tr>
+              <td>blockindent</td><td>Ctrl-]</td><td>Ctrl-]</td>
+            </tr>
+            <tr>
+              <td>splitline</td><td>null</td><td>Ctrl-O</td>
+            </tr>
+            <tr>
+              <td>transposeletters</td><td>Ctrl-T</td><td>Ctrl-T</td>
+            </tr>
+            <tr>
+              <td>touppercase</td><td>Ctrl-U</td><td>Ctrl-U</td>
+            </tr>
+            <tr>
+              <td>tolowercase</td><td>Ctrl-Shift-U</td><td>Ctrl-Shift-U</td>
+            </tr>
+            <tr>
+              <td>addCursorAbove</td><td>Ctrl-Alt-Up</td><td>Ctrl-Alt-Up</td>
+            </tr>
+            <tr>
+              <td>addCursorBelow</td><td>Ctrl-Alt-Down</td><td>Ctrl-Alt-Down</td>
+            </tr>
+            <tr>
+              <td>addCursorAboveSkipCurrent</td><td>Ctrl-Alt-Shift-Up</td><td>Ctrl-Alt-Shift-Up</td>
+            </tr>
+            <tr>
+              <td>addCursorBelowSkipCurrent</td><td>Ctrl-Alt-Shift-Down</td><td>Ctrl-Alt-Shift-Down</td>
+            </tr>
+            <tr>
+              <td>selectMoreBefore</td><td>Ctrl-Alt-Left</td><td>Ctrl-Alt-Left</td>
+            </tr>
+            <tr>
+              <td>selectMoreAfter</td><td>Ctrl-Alt-Right</td><td>Ctrl-Alt-Right</td>
+            </tr>
+            <tr>
+              <td>selectNextBefore</td><td>Ctrl-Alt-Shift-Left</td><td>Ctrl-Alt-Shift-Left</td>
+            </tr>
+            <tr>
+              <td>selectNextAfter</td><td>Ctrl-Alt-Shift-Right</td><td>Ctrl-Alt-Shift-Right</td>
+            </tr>
+            <tr>
+              <td>splitIntoLines</td><td>Ctrl-Alt-L</td><td>Ctrl-Alt-L</td>
+            </tr>
+            <tr>
+              <td>alignCursors</td><td>Ctrl-Alt-A</td><td>Ctrl-Alt-A</td>
+            </tr>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+
+</html>

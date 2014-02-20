@@ -1,0 +1,21 @@
+#!/usr/local/bin/node
+var server = require("../src/server.js")
+  , port = require('portastic');
+
+var options = {
+  min : 9998,
+  max : 9999,
+  retrieve : 1
+}
+
+port.find(options, function(err, openport){
+    if(err) {
+      throw err;
+    }
+    console.log("running on...");
+    console.log("   http://localhost:" + openport);
+    // start the server on an open port
+    server(openport);
+});
+
+

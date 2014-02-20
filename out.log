@@ -1,0 +1,35 @@
+Express server listening on port 3000
+[90mGET / [36m304 [90m18ms[0m
+[90mGET /dynatable/jquery.dynatable.css [36m304 [90m8ms[0m
+[90mGET /javascripts/jquery-1.8.0.min.js [36m304 [90m5ms[0m
+[90mGET /javascripts/vkbeautify.js [36m304 [90m4ms[0m
+[90mGET /bootstrap/js/bootstrap.min.js [36m304 [90m4ms[0m
+[90mGET /dynatable/jquery.dynatable.js [36m304 [90m5ms[0m
+[90mGET /themes/flatly.bootstrap.min.css [36m304 [90m1ms[0m
+[90mGET /stylesheets/results.css [36m304 [90m1ms[0m
+[90mGET /ace/ace.js [36m304 [90m1ms[0m
+[90mGET /javascripts/underscore.js [36m304 [90m1ms[0m
+[90mGET /javascripts/mustache.js [36m304 [90m1ms[0m
+[90mGET /javascripts/tables.js [36m304 [90m1ms[0m
+[90mGET /javascripts/config-editor.js [36m304 [90m0ms[0m
+[90mGET /ace/theme-cobalt.js [36m304 [90m1ms[0m
+[90mGET /ace/mode-pgsql.js [36m304 [90m0ms[0m
+[90mGET /fonts/glyphicons-halflings-regular.woff [36m304 [90m1ms[0m
+metadata loaded
+[90mGET / [36m304 [90m4ms[0m
+[90mGET /dynatable/jquery.dynatable.css [36m304 [90m1ms[0m
+[90mGET /javascripts/jquery-1.8.0.min.js [36m304 [90m4ms[0m
+[90mGET /javascripts/vkbeautify.js [36m304 [90m4ms[0m
+[90mGET /bootstrap/js/bootstrap.min.js [36m304 [90m5ms[0m
+[90mGET /dynatable/jquery.dynatable.js [36m304 [90m5ms[0m
+[90mGET /themes/flatly.bootstrap.min.css [36m304 [90m1ms[0m
+[90mGET /stylesheets/results.css [36m304 [90m0ms[0m
+[90mGET /ace/ace.js [36m304 [90m2ms[0m
+[90mGET /javascripts/underscore.js [36m304 [90m1ms[0m
+[90mGET /javascripts/mustache.js [36m304 [90m1ms[0m
+[90mGET /javascripts/tables.js [36m304 [90m1ms[0m
+[90mGET /javascripts/config-editor.js [36m304 [90m0ms[0m
+[90mGET /ace/theme-cobalt.js [36m304 [90m1ms[0m
+[90mGET /ace/mode-pgsql.js [36m304 [90m1ms[0m
+[90mGET /fonts/glyphicons-halflings-regular.woff [36m304 [90m0ms[0m
+metadata loaded

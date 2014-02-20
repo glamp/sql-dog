@@ -30,19 +30,27 @@
       <div class="navbar-collapse collapse navbar-responsive-collapse">
         <ul class="nav navbar-nav">
           <li class="active"><a href="/">IDE</a></li>
+          <li><a href="/help">Help</a></li>
           <li><a href="/about">About</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
-          <li style="padding-right: 10px;"><button id="btn-run" type="button" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-play"></span> Run</button></li>
-          <li style="padding-right: 10px;"><button type="button" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-stop"></span> Stop</button></li>
-          <li style="padding-right: 10px;"><button id="btn-save" type="button" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-floppy-disk"></span> Save</button></li>
-          <li style="padding-right: 10px;"><button id="btn-prettify" type="button" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-flash"></span> Prettify</button></li>
+          <li style="padding-right: 10px;">
+            <button id="btn-run" type="button" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-play"></span> Run</button>
+          </li>
+          <li style="padding-right: 10px;">
+            <button type="button" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-stop"></span> Stop</button>
+          </li>
+          <li style="padding-right: 10px;">
+            <button id="btn-save" type="button" class="btn btn-default navbar-btn" ><span class="glyphicon glyphicon-floppy-disk"></span> Save</button>
+          </li>
+          <li style="padding-right: 10px;">
+            <button id="btn-prettify" type="button" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-flash"></span> Prettify</button>
+          </li>
         </ul>
       </div><!-- /.nav-collapse -->
     </div>
     <!-- end navbar -->
-
-    <div class="row">
+    <div class="row row-offcanvas row-offcanvas-left">
     <!-- top left panel -->
         <!-- top left tabs (?) -->
       <div class="col-lg-8">
@@ -62,9 +70,8 @@
           </div>
         </div>
       </div>
-    <!-- top right panel -->
-        <!-- top right tabs (?) -->
-        <div class="col-lg-4">
+      <!-- top right panel -->
+        <div class="col-xs-8 col-sm-4 sidebar-offcanvas" id="sidebar" role="navigation">
           <div class="bs-example">
             <ul class="nav nav-tabs" style="margin-bottom: 15px;">
               <li class="active"><a href="#files" data-toggle="tab">Files</a></li>
@@ -83,22 +90,35 @@
                       {{#files}}
                       <li>
                         <a href="#editor-{{ escapedFilename }}" class="list-group-item file" data-toggle="tab">
-                          <button class="close delete" type="button"><span class="glyphicon glyphicon-minus"></span></button>{{ filename }}</a>
+                          <button class="close delete" type="button"><span class="glyphicon glyphicon-minus"></span></button>
+                          <button class="edit" type="button"><span class="glyphicon glyphicon-edit"></span></button>{{ filename }}</a>
                       </li>
                       {{/files}}
+                    </div>
+                    <form id="file-search-form">
+                      <input type="text" class="form-control col-lg-12" placeholder="Search Files">
+                    </form>
+                    <div id="search-results" class="list-group" style="list-style-type: none;">
                     </div>
                   </div>
                 </div>
               </div>
               <!-- schema tab -->
               <div class="tab-pane fade" id="schema">
-                <table id="schema-table"> 
+                <table id="schema-table" class="table table-striped table-bordered table-hover">
                   <thead>
                     <tr>
                       <th>Table</th>
                       <th>Column</th>
                       <th>Datatype</th>
                     </tr>
+                    {{#schema}}
+                      <tr>
+                        <td>{{ table }}</td>
+                        <td>{{ name }}</td>
+                        <td>{{ type }}</td>
+                      </tr>
+                    {{/schema}}
                   </thead>
                 </table>
               </div>
@@ -110,14 +130,14 @@
                       <label for="sqltype">SQL Type</label>
                       <select id="sqltype" class="form-control">
                         <option>Postgres</option>
-                        <option>MySQL</option>
-                        <option>MariaDB</option>
-                        <option>MS SQL</option>
+                        <option>Netezza</option>
+                        <option>Greenplum</option>
+                        <option>Redshift</option>
                       </select>
                     </div>
                     <div class="form-group">
                       <label for="username">Username</label>
-                      <input type="text" id="username" class="form-control" placeholder="Hank Mardukas">
+                      <input type="text" id="username" class="form-control" placeholder="hankmardukas">
                     </div>
                     <div class="form-group">
                       <label for="password">Password</label>
@@ -157,11 +177,16 @@
                       <label for="giturl">GIT Repo for Gists (Defaults to local)</label>
                       <input type="text" id="giturl" class="form-control" placeholder="git@github.com:glamp/SQL-Gists.git">
                     </div>
-                    <div class="checkbox">
+                    <div class="form-group">
+                      <label for="rows-returned">Max # of Rows Displayed</label>
+                      <input type="number" id="rows-returned" class="form-control" value="1000">
+                    </div>
+                    <div id="new-window" class="checkbox">
                       <label>
-                        <input type="checkbox"> Display results as modal?
+                        <input type="checkbox"> Display results in new window?
                       </label>
                     </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
                   </fieldset>
                 </form>
               </div>
@@ -223,16 +248,10 @@
             data[$(d).attr("id")] = $(d).val();
           });
           $.post("/settings", data);
+          return false;
       });
 
       var socket = io.connect();
-
-      // this isn't working :(
-      // $("#schema-table").dynatable({
-      //   dataset: {
-      //     records: schema
-      //   }
-      // });
 
       //this doens't work
       $("#editors").children().first().attr("class", "active");
@@ -242,7 +261,9 @@
         var table_id = 'results-' + ($("#results-tabs").children().length+1);
         // addTable(table_id, data);
         addTable2(table_id, data);
-        openInNewWindow("SQL Dog | Results", $("#table-" + table_id).parent().html())
+        if ($("#new-window input").prop("checked")) {
+          openInNewWindow("SQL Dog | Results", $("#table-" + table_id).parent().html())
+        }
       });
 
       socket.on("query-status", function(data) {
@@ -286,11 +307,6 @@
         editors[_id].session.replace(editors[_id].getSelectionRange(), pretty_text)
         return false;
       });
-
-      $("#help").submit(function(e) { 
-          // open a new window w/ the search results corresponding w/ the db 
-          // they're using
-      });
       
       socket.on("type-ahead", function(data) {
           guess_lis = data.map(function(guess) {
@@ -305,6 +321,13 @@
           $("#pred-modal").modal({ keyboard: true});
       });
 
+      socket.on("search-results", function(results) {
+        // we should really bind this somehow...(angular?)
+        results.forEach(function(r) {
+          // $("#files-list li:contains('" + r.name + "') a").css("background-color", "yellow");
+        });
+      });
+
       var editors = {};
       $("pre").each(function(i, pre) {
         var id = $(pre).attr("id");
@@ -317,6 +340,11 @@
           var url = "http://www.postgresql.org/search/?q={query}&a=1&submit=Search"
           var searchURL = url.replace("{query}", $("#help input").val());
           window.open(searchURL);
+      });
+      $("#file-search-form").submit(function(e) {
+        var text = $("#file-search-form input").val()
+        socket.emit("search-files", { query: text });
+        return false;
       });
 
       $("#editor-newfile").click(function(e) {
@@ -351,6 +379,28 @@
         });
       }
 
+      bindDownload = function() {
+        $(".download").click(function(e) {
+          var _id = $(this).parent().attr("href");          
+          var table_id = "table-" + $(this).parent().text().trim();
+          // add in download here
+        });
+      }
+
+      bindEdit = function() {
+        $(".edit").click(function(e) {
+          var _id = $(this).parent().attr("href");          
+          var filename = $(this).parent().text().trim();
+          if ($(this).hasClass("edit")) {
+            var newname = prompt('What would you like to rename "' + filename + '" ?');
+            if (newname) {
+              socket.emit("rename", { oldname: filename, newname: newname });
+              location.reload();
+            }
+          }
+        });
+      }
+
 
       $(".file").click(function(e) {
         var filename = $(this).text().trim();
@@ -370,11 +420,14 @@
             //$('a[href="#editor-' + _id + '"]').tab('show');
             $("#tab-" + _id).click();
             bindClose();
+            bindEdit();
           })
         }
       });
 
       bindClose();
+      bindEdit();
+      $("#new-window input").prop("checked", true);
       // $("#editor-newfile").click();
 
     </script>

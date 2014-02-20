@@ -129,7 +129,7 @@ search = function(query, done) {
 
 exports.config = config;
 exports.add = add;
-
+exports.rename = rename;
 exports.remove = remove;
 exports.list = list;
 exports.open = open;
