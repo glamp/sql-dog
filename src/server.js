@@ -3,7 +3,9 @@ var express = require('express')
   , path = require('path')
   , fs = require('fs')
   , _ = require('underscore')
-  , gists = require('./gists');
+  , gists = require('./gists')
+  , sqlformatter = require('./sql-formatter');
+
 
 module.exports = function(port) {
   if (fs.existsSync(path.join(__dirname, "..", ".settings"))) {
@@ -101,14 +103,19 @@ module.exports = function(port) {
   });
 
   app.post("/bulk", function(req, res) {
-    var query = req.body.query
-      , filename = sha(query)
-      , path_to_file = path.join(__dirname, "bulk", filename);
+    var query = req.body.query;
+    console.log(req.body);
 
     sql.execute(query, -1, function(err, result) {
+      res.attachment("query-result.json");
+      res.end(JSON.stringify(result, null, 2));
       res.send({ result: result});
-      //res.download(path_to_file);
     });
+  });
+  
+  app.post("/prettify", function(req, res) {
+    var query = req.body.query;
+    res.send({ pretty_query: sqlformatter(query) });
   });
 
 
@@ -118,11 +125,11 @@ module.exports = function(port) {
     // create a cache for queries and results
     socket.cache = { query: {}, results: {} };
 
+    // cache the metadata so type-ahead is fast
     sql.loadMetadata(function(err, meta) {
       if (err) {
         console.log("could not load metadata: ", err);
       }
-      console.log("metadata loaded");
     });
     
     /*
@@ -159,7 +166,7 @@ module.exports = function(port) {
               return;
             }
             // TODO: we should stream this...
-            socket.emit("query-result", result);
+            socket.emit("query-result", { result: result, query: data.query });
             socket.emit("query-status", { status: "stopped" });
           });
         }

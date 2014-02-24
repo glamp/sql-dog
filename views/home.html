@@ -5,8 +5,8 @@
     <link rel="stylesheet" media="all" href="/dynatable/jquery.dynatable.css" />
     <script src="/socket.io/socket.io.js"></script>
     <script src="/javascripts/jquery-1.8.0.min.js"></script>
-    <script src="/javascripts/vkbeautify.js"></script>
     <script src="/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/javascripts/cli-table/clitable.js"></script>
     <script src="/dynatable/jquery.dynatable.js" type="text/javascript"></script>
     <link rel='stylesheet' href='/themes/flatly.bootstrap.min.css' />
     <script src="/ace/ace.js" type="text/javascript" charset="utf-8"></script>
@@ -256,11 +256,12 @@
       //this doens't work
       $("#editors").children().first().attr("class", "active");
 
+      resultIds = {};
       socket.on("query-result", function(data) {
         // createModalTable(data);
         var table_id = 'results-' + ($("#results-tabs").children().length+1);
-        // addTable(table_id, data);
-        addTable2(table_id, data);
+        resultIds[table_id] = data.query;
+        makeTable(table_id, data.result, "plain"); // other option is "html"
         if ($("#new-window input").prop("checked")) {
           openInNewWindow("SQL Dog | Results", $("#table-" + table_id).parent().html())
         }
@@ -303,8 +304,9 @@
       $("#btn-prettify").click(function(e) {
         var _id = "ace-" + $("#editor-tabs .active").attr("id");
         var text = editors[_id].getSelectedText();
-        var pretty_text = vkbeautify.sql(text); 
-        editors[_id].session.replace(editors[_id].getSelectionRange(), pretty_text)
+        $.post('/prettify', { query: text }, function(data) {
+          editors[_id].session.replace(editors[_id].getSelectionRange(), data.pretty_query);
+        })
         return false;
       });
       
@@ -323,9 +325,16 @@
 
       socket.on("search-results", function(results) {
         // we should really bind this somehow...(angular?)
-        results.forEach(function(r) {
-          // $("#files-list li:contains('" + r.name + "') a").css("background-color", "yellow");
+        searching = true;
+        var guess_lis = [];
+        results.forEach(function(result) {
+          var filelink = "<a href='#editor-" + result.filename.replace(".", "-") +"' data-toggle='tab'>" + result.filename + "</a>"
+          guess_lis.push("<li>" + filelink + "<br>" + result.matched + "</li>");
         });
+        $("#guesses").children().remove();
+        $("#guesses").append(guess_lis.join("\n"));
+        $("#guesses").children().first().addClass("best");
+        $("#pred-modal").modal({ keyboard: true});
       });
 
       var editors = {};
@@ -342,6 +351,8 @@
           window.open(searchURL);
       });
       $("#file-search-form").submit(function(e) {
+        // TODO: not really working yet
+        return false;
         var text = $("#file-search-form input").val()
         socket.emit("search-files", { query: text });
         return false;
@@ -381,9 +392,13 @@
 
       bindDownload = function() {
         $(".download").click(function(e) {
-          var _id = $(this).parent().attr("href");          
-          var table_id = "table-" + $(this).parent().text().trim();
-          // add in download here
+          var _id = $(this).parent().attr("href").replace("#", ""); 
+          // TODO: executes fine, but not sure where the download is going
+          $.post("/bulk", { query: resultIds[_id] }, function(data) {
+            // data comes out here...
+            console.log(data);
+          });
+          return false;
         });
       }
 

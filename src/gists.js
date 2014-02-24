@@ -12,13 +12,12 @@ config = function(giturl, done) {
   done();
 }
 
-
-
 add = function(filecontents, filename, username, done) {
   /*
    * Check and see if a gist repo exists already. If not, then we're going to 
    * create a new one and initialize a repo.
    */
+  filename = filename.trim();
   var gist_repo = path.join(__dirname, "gists");
   if (! fs.existsSync(gist_repo)) {
     fs.mkdirSync(gist_repo);
@@ -120,8 +119,19 @@ list(function(filenames) {
 
 search = function(query, done) {
   query = query.toLowerCase();
-  var results = _.filter(sql_files, function(file) {
-      return file.content.toLowerCase().indexOf(query) > 0;
+  var results = [];
+   _.each(sql_files, function(file) {
+     if (file.content.toLowerCase().indexOf(query) > 0) {
+       var idx = file.content.toLowerCase().indexOf(query);
+       results.push({
+         filename: file.name,
+         content: file.content,
+         matched: "..." + file.content.slice(idx-20, idx+20)
+                      .replace(query, "<i>" + query + "</i>") + "..."
+         //matched: file.content.slice(Math.min(0, idx-20),
+                                     //Math.max(idx+20, file.content.length))
+       });
+     }
   });
   done(null, results);
 }

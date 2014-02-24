@@ -113,7 +113,7 @@ sendQuery = function(editor) {
           var queries = Mustache.render(query, userdata);
           queries.split(';').forEach(function(query) {
             if (query!="") {
-              $("#recent-queries").append("<li><pre>" + query + "</pre></li>");
+              $("#recent-queries").append("<li><pre id='insert-on-click'>" + query + "</pre></li>");
               socket.emit("query", {
                 query: query,
                 n: parseInt($("#rows-returned").val())
@@ -208,7 +208,6 @@ setupEditor = function(id, socket) {
       editor.predMode = true
       editor.predChars = "";
       editor.table = null;
-      console.log("typing ahead");
       socket.emit("type-ahead", { table: null, text: "" , tokens: getAllTokens(editor) });
     }
   });
@@ -336,7 +335,11 @@ setupEditor = function(id, socket) {
   editor.onTextInput = function(text) {
     if (editor.predMode==true) {
       editor.predChars += text;
-      socket.emit("type-ahead", { table: editor.table, text: findPredText(editor), tokens: getAllTokens(editor) });
+      socket.emit("type-ahead", {
+        table: editor.table,
+        text: findPredText(editor) + text,
+        tokens: getAllTokens(editor)
+      });
     }
     this.keyBinding.onTextInput(text);
   }

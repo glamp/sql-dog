@@ -26,18 +26,23 @@
 
 - ~~grabbing the "right" item~~
 - ~~utilizing `tab` to complete~~
-- fix issue w/ it being 1 character behind
+- ~~fix issue w/ it being 1 character behind~~
 - colorize based on what type of thing it is (?)
 - ~~create a modal overlay~~
+- add built in functions and keywords
 
 ### Results
 
-- memory issues when displaying > 1000 rows
+- copy to clipboard features that is compatible with Excel
+    - maybe just style the output differently?
+    - needs to table-like but not actually a `<table>` for performance reasons
+- ~~memory issues when displaying > 1000 rows~~
+- make "plain" table prettier
 - ~~display results on full screen as modal, then give option to delete or pin~~
 - ~~make this configurable in Preferences~~
 - ~~add "X" to close certain results~~
 - ~~add download icon to export results~~
-- add a "execute to file" feature
+- ~add a "execute to file" feature~
 - ~~hook up help to the actual help~~
 - ~~ability to open results in new window~~
 - ~~ability to auto-open results in new window~~
@@ -45,7 +50,7 @@
 
 ### Files
 
-- ~~live-grep on gists~~ (WORKS AT ALL)
+- ~~live-grep on gists~~ (WORKS AT ALL; some UI issues)
 - ~~add in ability to create a new file~~
 - ~~ability to rename files~~
 - ~~ability to close files~~
@@ -64,7 +69,7 @@
     - UI for configuration (?)
 - ~~SQL prettifier~~
 - add an animal logo
-- ~add in a searchable schema~
+- ~add in a searchable schema~ (works at all, looks terrible)
 - ~~history (?)~~
 - add in "?" with help and explanations
 - add a man entry

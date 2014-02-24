@@ -60,8 +60,8 @@ module.exports = function(constring) {
         var possibles = _.keys(metadata).map(function(name) {
           return { name: name, type: "table" };
         });
-        possibles = possibles.concat(tokens);
-        console.log(0);
+        //TODO: this is just annoying
+        // possibles = possibles.concat(tokens);
       } else {
         if (_.has(metadata, table)) {
           var possibles = metadata[table]
@@ -86,33 +86,7 @@ module.exports = function(constring) {
       });
       results = _.sortBy(results, function(item) {
         return item.dist;
-      })
-
-      // //TODO: one of these isn't going to work
-      // var rgx_search = new RegExp(".*" + escapeRegExp(text) + ".*", 'g');
-      // var matched_tokens = _.filter(tokens || [], function(t) {
-      //   return rgx_search.exec(t.name);
-      // })
-      // if (table==null) {
-      //   var results = _.filter(_.keys(metadata), function(i) {
-      //     return rgx_search.exec(i);
-      //   });
-      //   results = results.map(function(name) {
-      //     return { name: name, type: "table" };
-      //   });
-      //   results = results.concat(matched_tokens);
-      // } else if (_.has(metadata, table)) {
-      //   var results = _.filter(metadata[table], function(i) {
-      //     return rgx_search.exec(i.name);
-      //   });
-      //   results = results.concat(matched_tokens);
-      // } else {
-      //   return fn("Did not work", null);
-      // }
-      // results = results.map(function(result) {
-      //   result.dist = lev(text, result.name);
-      //   return result;
-      // })
+      });
       fn(null, results);
     },
     execute : function(querystring, limit, fn) {

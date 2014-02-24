@@ -26,7 +26,18 @@ addTable = function(table_id, records) {
 	// $("#results-list").children().last().attr("class", "active");
 }
 
-addTable2 = function(table_id, records) {
+makeTable = function(table_id, records, type) {
+  type = type || "plain";
+  if (type=="pretty") {
+    addCliTable(table_id, records);
+  } else if (type=="plain") {
+    addPlainTable(table_id, records);
+  } else {
+    addHtmlTable(table_id, records);
+  }
+}
+
+addHtmlTable= function(table_id, records) {
 	var li = '<li class=""><a href="#' + table_id + '" data-toggle="tab">';
 	li += '<button class="close" type="button"><span class="glyphicon glyphicon-remove">'
 	li += '<button class="download" type="button"><span class="glyphicon glyphicon-download-alt">'
@@ -67,6 +78,76 @@ addTable2 = function(table_id, records) {
 	bindClose();
 	bindDownload();
 }
+
+addCliTable = function(table_id, records) {
+  var li = '<li class=""><a href="#' + table_id + '" data-toggle="tab">';
+	li += '<button class="close" type="button"><span class="glyphicon glyphicon-remove">'
+	li += '<button class="download" type="button"><span class="glyphicon glyphicon-download-alt">'
+	li += '</span></button>' + table_id + '</a></li>';
+	$("#results-list").append(li);
+	$("#results-tabs").append('<div id="' + table_id + '" class="tab-pane">');
+	
+  var cols = _.keys(_.first(records));
+  cols = ['idx'].concat(cols);
+  var table = new Table({ head: cols });
+
+  var table_template = '<pre id="' + "table-" + table_id + '">\n';
+	idx = 1;
+	records.forEach(function(record) {
+    if (idx > parseInt($("#rows-returned").val())) {
+      return;
+    }
+		record.idx = idx;
+    var row = []
+    cols.forEach(function(col) {
+      row.push(record[col]);
+    });
+    table.push(row);
+    console.log(row);
+		idx++;
+	});
+  table_template += table.toString() + "</pre>"
+	$('#' + table_id).append(table_template);
+	bindClose();
+	bindDownload();
+
+}
+
+addPlainTable = function(table_id, records) {
+  var li = '<li class=""><a href="#' + table_id + '" data-toggle="tab">';
+	li += '<button class="close" type="button"><span class="glyphicon glyphicon-remove">'
+	li += '<button class="download" type="button"><span class="glyphicon glyphicon-download-alt">'
+	li += '</span></button>' + table_id + '</a></li>';
+	$("#results-list").append(li);
+	$("#results-tabs").append('<div id="' + table_id + '" class="tab-pane">');
+	
+  var cols = _.keys(_.first(records));
+
+  var table_template = ''
+  table_template += '<pre id="' + "table-" + table_id + '">\n';
+  table_template += 'idx|' + cols.join("|") + "\n";
+  table_template += cols.join('|').replace(/./g, '=') + '\n'
+	table_template += '  {{#rows}}\n'
+	table_template += '	   {{ idx }}|'
+	cols.forEach(function(col) {
+		table_template += '{{ ' + col + '}}|'
+	});
+  table_template += "\n"
+	table_template += '{{/rows}}\n'
+	table_template += '</pre>'
+	idx = 1;
+	records.forEach(function(record) {
+    if (idx > parseInt($("#rows-returned").val())) {
+      return;
+    }
+		record.idx = idx;
+		idx++;
+	});
+	$('#' + table_id).append(Mustache.render(table_template, { cols: cols, rows: records }));
+	bindClose();
+	bindDownload();
+};
+
 
 createModalTable = function(records) {
 	var _id = 'result-table'
