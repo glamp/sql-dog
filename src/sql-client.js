@@ -90,6 +90,7 @@ module.exports = function(constring) {
       fn(null, results);
     },
     execute : function(querystring, limit, fn) {
+      console.log(querystring);
       _id = querystring;
       limit = limit || 10000;
       if (_.has(queries, _id)) {

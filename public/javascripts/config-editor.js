@@ -93,7 +93,8 @@ extractQuery = function(editor) {
         || first_query_row==last_query_row) {
         first_query_row--;
     }
-    return editor.session.getLines(first_query_row, last_query_row).join("\n").trim();
+    var query = editor.session.getLines(first_query_row, last_query_row).join("\n").trim();
+    return query;
 }
 
 sendQuery = function(editor) {

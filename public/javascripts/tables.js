@@ -128,7 +128,7 @@ addPlainTable = function(table_id, records) {
   table_template += 'idx|' + cols.join("|") + "\n";
   table_template += cols.join('|').replace(/./g, '=') + '\n'
 	table_template += '  {{#rows}}\n'
-	table_template += '	   {{ idx }}|'
+	table_template += '{{ idx }}|'
 	cols.forEach(function(col) {
 		table_template += '{{ ' + col + '}}|'
 	});

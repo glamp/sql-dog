@@ -23,6 +23,12 @@ db-admins, they're analysts who need to *query* data (not manage it). So instead
 we're going to focus on providing features for the 90-95% of users who need to 
 get data out of a database, not manage it.
 
+## Dependencies
+
+- `node.js`: backend of app / sql engine
+- `git`: storage and versioning
+- `forever`: for keeping the app up
+
 ## Basic Components / Things it does
 We'll have a single page app that has a basic client/server configuration.
 
