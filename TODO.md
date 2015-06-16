@@ -76,7 +76,7 @@
 
 ## Databases
 
-- add support for MySQL
 - add support for MS SQL Server
+- add support for MySQL
 - add support for something else (MongoDB?)
 

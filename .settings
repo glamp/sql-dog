@@ -1,9 +1,10 @@
 {
   "sqltype": "Postgres",
-  "username": "austin",
+  "username": "greg",
   "password": "ycowboyhat",
   "hostname": "dw.yhathq.com",
   "dbname": "yhat",
   "port": "5432",
-  "giturl": ""
+  "giturl": "",
+  "rows-returned": "1000"
 }

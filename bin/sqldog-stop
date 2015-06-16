@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for ID in `forever list | grep sqldog | awk '{ print $2 }' | tr -d '[]'`
+for ID in `/usr/local/bin/forever list | grep sqldog | awk '{ print $2 }' | tr -d '[]'`
 do
-  forever stop "${ID}"
+  /usr/local/bin/forever stop "${ID}"
 done

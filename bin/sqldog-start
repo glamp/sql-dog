@@ -1,3 +1,10 @@
 #!/bin/bash
 
-forever start ./sqldog-run
+line=$(/usr/local/bin/forever list | grep sqldog)
+if [ $? -eq 0 ]; then
+  for fid in `echo $line | grep -E -o "\[[0-9]+\]" | grep -E -o [0-9]+`
+  do
+    /usr/local/bin/forever stop ${fid}>/dev/null
+  done
+fi
+/usr/local/bin/forever start ./sqldog-run

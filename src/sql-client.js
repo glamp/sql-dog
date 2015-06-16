@@ -102,6 +102,9 @@ module.exports = function(constring) {
       queries[_id] = "go";
       var rows = [];
       pg.connect(constring, function(err, db, done) {
+        if (err) {
+          console.log(err);
+        }
         if (limit > 0) {
           query = querystring.replace(/;$/, "");
           querystring = "select * from (" + query + ") as t limit " + limit;

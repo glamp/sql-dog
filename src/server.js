@@ -18,7 +18,10 @@ module.exports = function(port) {
     DB_CONN = connstring;
   }
 
-  var sql = require('./sql-client')(process.env["DB_CONN"] || "postgres://glamp@localhost/sandbox");
+  var conParams = JSON.parse(fs.readFileSync(path.join(__dirname, '..', ".settings")).toString());
+  constring = "postgres://" + conParams.username + ":" + conParams.password;
+  constring += "@" + conParams.hostname + "/" + conParams.dbname;
+  var sql = require('./sql-client')(constring || process.env["DB_CONN"] || "postgres://glamp@localhost/sandbox");
 
   var schema = null;
   sql.loadMetadata(function(err, meta) {
