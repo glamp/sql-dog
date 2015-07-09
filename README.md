@@ -1,6 +1,7 @@
 # SQL IDE
-Currently there aren't any good OSX SQL IDE options. In fact, most SQL IDE's 
-have too many features that concentrate on exploiting the features of...SQL.
+Currently there aren't any good OSX SQL IDE options (Until now! Try [wagon](http://www.wagonhq.com/)).
+In fact, most SQL IDE's have too many features that concentrate on exploiting 
+the features of...SQL.
 
 - querying in the browser
 - saving results
